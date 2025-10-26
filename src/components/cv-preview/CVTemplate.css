@@ -1,0 +1,305 @@
+/* ==========================================================================
+   PL: Główny kontener podglądu CV (udający kartkę A4)
+   EN: Main container for the CV preview (simulating an A4 page)
+   ========================================================================== */
+.cv-preview-page {
+  background-color: #ffffff;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  min-height: 900px;
+  padding: 2.5rem 3rem;
+  color: #333;
+  font-family: 'Georgia', 'Times New Roman', Times, serif;
+  line-height: 1.5;
+  font-size: 11pt;
+}
+
+/* ==========================================================================
+   PL: Nagłówek CV (zdjęcie, imię, stanowisko)
+   EN: CV Header (photo, name, position)
+   ========================================================================== */
+.cv-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cv-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
+
+.cv-header-info {
+  flex: 1;
+}
+
+/* PL: Wyśrodkowanie tekstu, jeśli nie ma zdjęcia / EN: Center text if there is no photo */
+.cv-header-info:only-child {
+  text-align: center;
+}
+
+.cv-header-info h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  text-align: inherit;
+}
+
+.cv-header-info .cv-position {
+  font-size: 1.3rem;
+  font-style: italic;
+  color: #555;
+  margin-top: 0.25rem;
+  text-align: inherit;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   PL: Główny układ treści CV (pasek boczny + treść główna)
+   EN: Main CV content layout (sidebar + main content)
+   ========================================================================== */
+.cv-body {
+  display: grid;
+  grid-template-columns: 38% 1fr;
+  gap: 2.5rem;
+}
+
+/* ==========================================================================
+   PL: Pasek boczny (lewa kolumna)
+   EN: Sidebar (left column)
+   ========================================================================== */
+.cv-sidebar h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary-green);
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.25rem;
+}
+
+.cv-sidebar-section {
+  margin-top: 1.5rem;
+}
+
+/* PL: Lista danych kontaktowych */
+/* EN: Contact details list */
+.cv-contact-list {
+  list-style: none;
+  padding: 0;
+  font-size: 10.5pt;
+}
+
+.cv-contact-list li {
+  margin-bottom: 0.85rem;
+  word-break: break-word;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cv-contact-list li b {
+  color: #333;
+  font-weight: 600;
+}
+
+/* PL: Lista linków (Media społecznościowe) */
+/* EN: Links list (Social Media) */
+.cv-links-list {
+  list-style: none;
+  padding: 0;
+  font-size: 10.5pt;
+}
+
+.cv-links-list li {
+  margin-bottom: 0.75rem;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cv-links-list a {
+  color: #333;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.cv-links-list a:hover {
+  color: var(--primary-green);
+}
+
+/* PL: Lista umiejętności */
+/* EN: Skills list */
+.cv-skills-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cv-skills-list li {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+.skill-name {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #333;
+  padding-right: 1rem;
+}
+
+/* PL: Kropki poziomu umiejętności */
+/* EN: Skill level dots */
+.skill-level-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.skill-level-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+}
+
+.skill-level-dots .dot.filled {
+  background-color: var(--primary-green);
+}
+
+/* PL: Lista języków */
+/* EN: Languages list */
+.cv-language-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cv-language-list li {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.language-name {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #333;
+}
+
+.language-level {
+  font-size: 10pt;
+  color: #555;
+  text-align: right;
+  padding-left: 1rem;
+}
+
+/* PL: Tekst zainteresowań */
+/* EN: Hobbies text */
+.cv-hobbies-text {
+  font-size: 10.5pt;
+  color: #555;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   PL: Główna treść (prawa kolumna)
+   EN: Main content (right column)
+   ========================================================================== */
+.cv-main-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary-green);
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.25rem;
+}
+
+/* PL: Ogólny styl dla sekcji (Profil, Doświadczenie, Edukacja, etc.) */
+/* EN: General style for sections (Summary, Experience, Education, etc.) */
+.cv-section {
+  margin-bottom: 1.5rem;
+}
+
+/* PL: Tekst profilu zawodowego */
+/* EN: Profile summary text */
+.cv-summary-text {
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+  text-align: justify;
+}
+
+/* PL: Placeholder dla pustych sekcji */
+/* EN: Placeholder for empty sections */
+.placeholder-text {
+  font-style: italic;
+  color: #999;
+  font-size: 10pt;
+}
+
+/* PL: Pojedynczy wpis w sekcjach Doświadczenie, Staże, Edukacja, Kursy, Certyfikaty */
+/* EN: Single entry in Experience, Internships, Education, Courses, Certificates sections */
+.cv-job-entry {
+  margin-bottom: 1.25rem;
+  page-break-inside: avoid;
+}
+
+.cv-job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.cv-job-position {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.cv-job-dates {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  font-style: italic;
+  margin: 0;
+  flex-shrink: 0;
+  padding-left: 1rem;
+}
+
+.cv-job-company {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
+  margin: 0 0 0.5rem 0;
+}
+
+.cv-job-summary {
+  font-size: 10.5pt;
+  color: #555;
+  margin: 0;
+  white-space: pre-wrap;
+  text-align: justify;
+}

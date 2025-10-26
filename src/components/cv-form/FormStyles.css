@@ -1,0 +1,539 @@
+/* ==========================================================================
+   PL: Ogólne style dla sekcji formularzy (<fieldset>)
+   EN: General styles for form sections (<fieldset>)
+   ========================================================================== */
+
+.form-section {
+  border: none;
+  /* PL: Linia oddzielająca sekcje / EN: Bottom border separating sections */
+  border-bottom: 1px solid var(--border-color);
+  padding: 2rem 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0;
+}
+
+/* PL: Pierwsza sekcja nie potrzebuje dodatkowego odstępu na górze */
+/* EN: The first section doesn't need extra top padding */
+.form-section:first-of-type {
+  padding-top: 0.5rem;
+}
+
+/* PL: Styl tytułu sekcji (<legend>) */
+/* EN: Style for the section title (<legend>) */
+.form-section legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 2rem;
+  color: var(--text-dark);
+}
+
+/* ==========================================================================
+   PL: Style dla grup pól formularza i etykiet
+   EN: Styles for form field groups and labels
+   ========================================================================== */
+
+/* PL: Ogólna grupa pól (jedno pole pod drugim) */
+/* EN: General field group (one field below the other) */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+/* PL: Wiersz z polami obok siebie */
+/* EN: Row with fields side-by-side */
+.form-group-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group-row .form-group {
+  flex: 1;
+  min-width: 180px;
+  margin-bottom: 0;
+}
+
+/* PL: Etykiety pól */
+/* EN: Field labels */
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   PL: Ujednolicone style dla pól wprowadzania danych
+   EN: Unified styles for input fields
+   ========================================================================== */
+
+/* PL: Główne style dla input, select, textarea */
+/* EN: Main styles for input, select, textarea */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group input[type="month"],
+.form-group select,
+.form-group textarea,
+.date-picker-input {
+  padding: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #fff;
+  width: 100%;
+  color: var(--text-dark);
+}
+
+/* PL: Style dla stanu :focus */
+/* EN: Styles for the :focus state */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.date-picker-input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+/* PL: Dodatkowe style dla textarea */
+/* EN: Additional styles for textarea */
+.form-group textarea {
+  line-height: 1.5;
+}
+
+/* PL: Style dla pola wyboru pliku */
+/* EN: Styles for the file input field */
+.form-group input[type="file"] {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+.form-group input[type="file"]::file-selector-button {
+  padding: 0.6rem 1.1rem;
+  margin-right: 1rem;
+  border: 1px solid var(--primary-green);
+  border-radius: 5px;
+  background-color: var(--card-bg);
+  color: var(--primary-green);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+/* PL: Style dla pól daty (DatePicker i natywne) */
+/* EN: Styles for date fields (DatePicker and native) */
+.date-picker-input::placeholder {
+  color: #999;
+}
+
+.date-picker-input:disabled,
+.form-group input[type="date"]:disabled,
+.form-group input[type="month"]:disabled {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
+
+/* PL: Poprawka koloru dla natywnych pól daty */
+/* EN: Color fix for native date inputs */
+.form-group input[type="month"],
+.form-group input[type="date"] {
+  color: #999;
+}
+
+.form-group input[type="month"]:valid,
+.form-group input[type="date"]:valid {
+  color: var(--text-dark);
+}
+
+/* ==========================================================================
+   PL: Style dla niestandardowych checkboxów (np. Prawo Jazdy)
+   EN: Styles for custom checkboxes (e.g., Driving License)
+   ========================================================================== */
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+/* PL: Ukrycie domyślnego checkboxa */
+/* EN: Hide the default checkbox */
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+/* PL: Styl "przycisku" zastępującego checkbox */
+/* EN: Style for the "button" replacing the checkbox */
+.checkbox-label span {
+  display: block;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-light);
+  background-color: var(--card-bg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label span:hover {
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+
+/* PL: Styl zaznaczonego "przycisku" */
+/* EN: Style for the checked "button" */
+.checkbox-label input[type="checkbox"]:checked+span {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+  color: white;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+/* PL: Resetowanie domyślnej etykiety checkboxa */
+/* EN: Resetting the default checkbox label */
+.checkbox-label {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* ==========================================================================
+   PL: Style dla przycisków Dodaj/Usuń i opisów sekcji
+   EN: Styles for Add/Delete buttons and section descriptions
+   ========================================================================== */
+
+.section-description {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* PL: Przycisk "+ Dodaj ..." na dole sekcji */
+/* EN: "+ Add ..." button at the bottom of a section */
+.btn-add {
+  display: block;
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  background-color: transparent;
+  border: 2px dashed var(--primary-green);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.btn-add:hover {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-style: solid;
+}
+
+/* PL: Minimalistyczny przycisk "Usuń" (w akordeonie) */
+/* EN: Minimalist "Delete" button (in accordion) */
+.btn-delete-minimal {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c0392b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.btn-delete-minimal:hover {
+  color: #e74c3c;
+}
+
+/* ==========================================================================
+   PL: Style dla komponentu Akordeonu (Doświadczenie, Edukacja, etc.)
+   EN: Styles for the Accordion component (Experience, Education, etc.)
+   ========================================================================== */
+
+.accordion-container {
+  margin-bottom: 2rem;
+}
+
+.form-entry-accordion {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #fdfdfd;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* PL: Lekkie podświetlenie ramki przy najechaniu na nagłówek */
+/* EN: Slight border highlight on header hover */
+.form-entry-accordion:has(.form-entry-header:hover) {
+  border-color: #bbb;
+}
+
+/* PL: Nagłówek akordeonu (klikalny) */
+/* EN: Accordion header (clickable) */
+.form-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+}
+
+.form-entry-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+}
+
+.form-entry-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-light);
+}
+
+/* PL: Ikona strzałki rozwijania */
+/* EN: Expand/collapse arrow icon */
+.accordion-icon {
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: transform 0.3s ease;
+}
+
+.accordion-icon.open {
+  transform: rotate(180deg);
+}
+
+/* PL: Kontener na treść formularza (rozwijany) */
+/* EN: Container for the form content (expandable) */
+.form-entry-content {
+  padding: 0 1.25rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   PL: Style dla formularza Umiejętności (SkillsForm)
+   EN: Styles for the Skills form (SkillsForm)
+   ========================================================================== */
+
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.skill-entry {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.skill-entry .form-group {
+  margin-bottom: 0;
+}
+
+.skill-delete {
+  padding: 0.5rem;
+  text-align: right;
+}
+
+/* PL: Style dla komponentu oceny gwiazdkowej */
+/* EN: Styles for the StarRating component */
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.star-rating .star {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.star-rating .star.filled {
+  color: var(--primary-green);
+}
+
+.star-rating .star.hover {
+  color: var(--primary-green-dark);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   PL: Style dla sekcji "Dodatkowe informacje" (ExtraSectionsForm)
+   EN: Styles for the "Extra Information" section (ExtraSectionsForm)
+   ========================================================================== */
+
+.section-adder-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* PL: Styl przycisku-pigułki do dodawania sekcji */
+/* EN: Style for the pill button to add sections */
+.btn-add-section {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  background-color: transparent;
+  border: 1px solid var(--primary-green);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-section:hover {
+  background-color: var(--primary-green);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
+
+/* PL: Styl aktywnego przycisku (sekcja włączona) */
+/* EN: Style for the active button (section enabled) */
+.btn-add-section.active {
+  background-color: var(--primary-green);
+  color: white;
+  border-color: var(--primary-green);
+}
+
+.btn-add-section.active:hover {
+  background-color: var(--primary-green-dark);
+  border-color: var(--primary-green-dark);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   PL: Style dla przycisku "X" do zamykania sekcji
+   EN: Styles for the "X" button to close sections
+   ========================================================================== */
+
+.btn-remove-section {
+  font-family: Arial, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-remove-section:hover {
+  color: #c0392b;
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   PL: Style dla formularza Media Społecznościowe (SocialsForm)
+   EN: Styles for the Social Media form (SocialsForm)
+   ========================================================================== */
+
+.socials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.social-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.social-entry .form-group {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   PL: Style dla list rozwijanych (Select)
+   EN: Styles for Select dropdowns
+   ========================================================================== */
+
+/* PL: Ujednolicony styl dla <select> */
+/* EN: Unified style for <select> */
+.form-select {
+  padding: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #fff;
+  width: 100%;
+  color: #999;
+}
+
+/* PL: Ciemny tekst po wybraniu opcji */
+/* EN: Dark text when an option is selected */
+.form-select:valid {
+  color: var(--text-dark);
+}
+
+/* PL: Style focus dla <select> */
+/* EN: Focus styles for <select> */
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+/* PL: Styl dla nieaktywnego <select> */
+/* EN: Style for disabled <select> */
+.form-select:disabled {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
