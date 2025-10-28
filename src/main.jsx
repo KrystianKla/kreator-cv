@@ -5,6 +5,7 @@ import App from './App';
 import './index.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CVProvider } from './context/CVContext';
+import './print.css';
 
 // PL: Renderowanie głównego komponentu aplikacji w DOM
 // EN: Rendering the main application component into the DOM

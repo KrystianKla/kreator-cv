@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PersonalDetailsForm from '../components/cv-form/PersonalDetailsForm';
 import ProfileSummaryForm from '../components/cv-form/ProfileSummaryForm';
 import ExperienceForm from '../components/cv-form/ExperienceForm';
@@ -25,6 +25,7 @@ const EditorPage = () => {
   // PL: Pobranie aktualnych danych CV z globalnego kontekstu
   // EN: Get the current CV data from the global context
   const { cvData } = useCV();
+  const componentToPrintRef = useRef(null); // Można zainicjować nullem
 
   return (
     <div className="editor-layout">
@@ -32,6 +33,14 @@ const EditorPage = () => {
       {/* EN: Left column containing all form components */}
       <div className="editor-form-column">
         <h2>Uzupełnij swoje dane</h2>
+
+        <button
+          onClick={() => print()}
+          type="button"
+          className="btn-print"
+        >
+          Pobierz / Drukuj CV
+        </button>
 
         {/* PL: Podstawowe sekcje formularza */}
         {/* EN: Basic form sections */}
@@ -65,10 +74,12 @@ const EditorPage = () => {
       <div className="editor-preview-column">
         <h2>Podgląd CV</h2>
         <div className="cv-preview-wrapper">
-          <CVTemplate />
+          <div ref={componentToPrintRef}>
+            <CVTemplate />
+          </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

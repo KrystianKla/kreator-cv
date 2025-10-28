@@ -1,0 +1,53 @@
+/* PL: Style stosowane tylko podczas drukowania lub generowania PDF */
+/* EN: Styles applied only during printing or PDF generation */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    /* PL: Pokaż tylko obszar podglądu CV i jego zawartość */
+    /* EN: Show only the CV preview area and its contents */
+    .cv-preview-wrapper,
+    .cv-preview-wrapper * {
+        visibility: visible;
+    }
+
+    /* PL: Ustaw podgląd CV na pełnej stronie */
+    /* EN: Position the CV preview on the full page */
+    .cv-preview-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    /* PL: Ustaw samą kartkę CV */
+    /* EN: Style the CV page itself */
+    .cv-preview-page {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        aspect-ratio: unset !important;
+        margin: 0 !important;
+        padding: 15mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: visible;
+    }
+
+
+    .cv-section,
+    .cv-job-entry {
+        page-break-inside: avoid;
+    }
+
+    h3 {
+        page-break-after: avoid;
+    }
+}

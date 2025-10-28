@@ -64,8 +64,27 @@
 .cv-preview-wrapper {
   width: 100%;
   max-width: 800px;
+  margin: 0 auto 3rem auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 3rem;
+}
+
+/* Style dla przycisku Pobierz/Drukuj */
+.btn-print {
+  display: block;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.btn-print:hover {
+  background-color: rgba(76, 175, 80, 0.05);
 }
