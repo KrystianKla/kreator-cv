@@ -1,31 +1,57 @@
-import { NavLink, Link } from 'react-router-dom';
+import React from 'react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 // PL: Komponent paska nawigacyjnego (Navbar) aplikacji.
+// Wyświetla linki oraz stan logowania użytkownika.
 // EN: Application Navigation Bar (Navbar) component.
+// Displays links and user authentication status.
 
 const Navbar = () => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // PL: Przekieruj na stronę główną po pomyślnym wylogowaniu
+      // EN: Redirect to the homepage after successful logout
+      navigate('/');
+      console.log('User logged out successfully.');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <nav className="navbar">
-      {/* PL: Link do strony głównej z logiem/nazwą aplikacji */}
-      {/* EN: Link to the homepage with the app logo/name */}
       <Link to="/" className="navbar-brand">
         KreatorCV
       </Link>
 
-      {/* PL: Główne linki nawigacyjne */}
-      {/* EN: Main navigation links */}
       <div className="navbar-links">
         <NavLink to="/szablony">Szablony CV</NavLink>
         <NavLink to="/przyklady">Przykłady CV</NavLink>
         <NavLink to="/blog">Blog</NavLink>
       </div>
 
-      {/* PL: Sekcja z przyciskami akcji (np. logowanie) */}
-      {/* EN: Section with action buttons (e.g., login) */}
       <div className="navbar-actions">
-        <Link to="/login" className="btn btn-login">
-          Zaloguj się
-        </Link>
+        {currentUser ? (
+          <>
+            <span style={{ marginRight: '1rem', fontWeight: '500' }}>
+              Witaj, {currentUser.displayName || currentUser.email}!
+            </span>
+            <button onClick={handleLogout} className="btn btn-login">
+              Wyloguj
+            </button>
+          </>
+        ) : (
+          // PL: Jeśli użytkownik NIE jest zalogowany
+          // EN: If user is NOT logged in
+          <Link to="/login" className="btn btn-login">
+            Zaloguj się
+          </Link>
+        )}
       </div>
     </nav>
   );

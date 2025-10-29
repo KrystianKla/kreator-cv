@@ -6,6 +6,7 @@ import './index.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CVProvider } from './context/CVContext';
 import './print.css';
+import { AuthProvider } from './context/AuthContext';
 
 // PL: Renderowanie głównego komponentu aplikacji w DOM
 // EN: Rendering the main application component into the DOM
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       {/* PL: CVProvider udostępnia stan danych CV całej aplikacji */}
       {/* EN: CVProvider makes the CV data state available to the entire application */}
       <CVProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </CVProvider>
     </BrowserRouter>
   </React.StrictMode>,
