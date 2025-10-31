@@ -5,9 +5,10 @@ import HomePage from './pages/HomePage';
 import EditorPage from './pages/EditorPage';
 import TemplatesPage from './pages/TemplatesPage';
 import CVExamplesPage from './pages/CVExamplesPage';
-import BlogPage from './pages/BlogPage';
+import BlogListPage from './pages/BlogListPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import PostDetailPage from './pages/PostDetailPage';
 
 import './App.css';
 
@@ -37,7 +38,8 @@ function App() {
         <Route path="edytor" element={<EditorPage />} />
         <Route path="szablony" element={<TemplatesPage />} />
         <Route path="przyklady" element={<CVExamplesPage />} />
-        <Route path="blog" element={<BlogPage />} />
+        <Route path="blog" element={<BlogListPage />} />
+        <Route path="blog/:postId" element={<PostDetailPage />} />
         <Route path="login" element={<LoginPage />} />
 
         {/* PL: Trasa "catch-all" (*) - renderuje NotFoundPage, jeśli żadna inna trasa nie pasuje. */}
