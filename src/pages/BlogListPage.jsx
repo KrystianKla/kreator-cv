@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../firebaseConfig';
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, doc, updateDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useAuth } from '../context/AuthContext';
 import CreatePostForm from '../components/blog/CreatePostForm';
 import './BlogPage.css';
+
+const LoadingSpinner = () => (
+    <div className="loading-spinner-container">
+        <div className="loading-spinner"></div>
+    </div>
+);
 
 const filterCategories = ["Wszystkie", "Pytanie", "Oferta Pracy", "Dyskusja"];
 
@@ -58,6 +64,51 @@ const BlogListPage = () => {
         fetchPosts();
     };
 
+    const handleLikeToggle = async (postId, likedByParam) => {
+        if (!currentUser) {
+            alert("Musisz być zalogowany, aby polubić post.");
+            return;
+        }
+
+        const postRef = doc(db, "posts", postId);
+        const userId = currentUser.uid;
+        const likedBy = likedByParam || [];
+        const isLiked = likedBy.includes(userId);
+
+        try {
+            if (isLiked) {
+                await updateDoc(postRef, {
+                    likeCount: increment(-1),
+                    likedBy: arrayRemove(userId)
+                });
+            } else {
+                await updateDoc(postRef, {
+                    likeCount: increment(1),
+                    likedBy: arrayUnion(userId)
+                });
+            }
+
+            setPosts(prevPosts =>
+                prevPosts.map(p => {
+                    if (p.id === postId) {
+                        const currentLikedBy = p.likedBy || [];
+
+                        const newLikedBy = isLiked
+                            ? currentLikedBy.filter(uid => uid !== userId)
+                            : [...currentLikedBy, userId];
+                        const newLikeCount = isLiked ? p.likeCount - 1 : (p.likeCount || 0) + 1;
+
+                        return { ...p, likedBy: newLikedBy, likeCount: newLikeCount };
+                    }
+                    return p;
+                })
+            );
+
+        } catch (err) {
+            console.error("Błąd podczas przełączania polubienia:", err);
+        }
+    };
+
     return (
         <div className="blog-container">
             <h1>Forum / Blog</h1>
@@ -95,7 +146,7 @@ const BlogListPage = () => {
 
             <div className="post-list">
                 {loading ? (
-                    <p>Ładowanie postów...</p>
+                    <LoadingSpinner />
                 ) : posts.length > 0 ? (
                     posts.map(post => (
                         <Link to={`/blog/${post.id}`} key={post.id} className="post-summary-card">
@@ -110,6 +161,28 @@ const BlogListPage = () => {
                             </p>
                             <div className="post-footer">
                                 <span className="post-author">Autor: {post.authorName || 'Anonim'}</span>
+                                <div className='post-actions'>
+                                    <span className="post-reply-count">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                                            <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17.607 2.344 14C1.258 12.793 1 11.432 1 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
+                                        </svg>
+                                        {post.replyCount || 0}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className={`like-button ${post.likedBy?.includes(currentUser?.uid) ? 'liked' : ''}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleLikeToggle(post.id, post.likedBy);
+                                        }}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                                            <path d="M9.653 16.915l-.005-.003-.019-.01a20.759 20.759 0 01-1.162-.682 22.045 22.045 0 01-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 018-2.828A4.5 4.5 0 0118 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 01-2.582 1.9 20.753 20.753 0 01-1.162.682l-.019.01-.005.003h0z" />
+                                        </svg>
+                                        {post.likeCount || 0}
+                                    </button>
+                                </div>
                             </div>
                         </Link>
                     ))

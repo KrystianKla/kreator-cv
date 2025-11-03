@@ -186,10 +186,17 @@
     font-size: 0.9rem;
     color: #888;
     margin-top: auto;
+    gap: 0.5rem;
 }
 
 .post-author {
     font-weight: 600;
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .btn-back-to-blog {
@@ -287,4 +294,95 @@
     color: #333;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+}
+
+.post-reply-count {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.post-reply-count svg {
+    opacity: 0.6;
+}
+
+.like-button {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 0.25rem 0.6rem;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.like-button svg {
+    fill: none;
+    stroke: var(--text-light);
+    stroke-width: 2;
+    transition: all 0.2s ease;
+}
+
+.like-button:hover {
+    background-color: #e0e0e0;
+    color: var(--text-dark);
+}
+
+.like-button:hover svg {
+    stroke: #d6336c;
+}
+
+.like-button.liked {
+    background-color: #fff0f6;
+    color: #d6336c;
+    border-color: #ffd6e5;
+}
+
+.like-button.liked svg {
+    fill: #d6336c;
+    stroke: #d6336c;
+}
+
+.post-detail-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-detail-card .post-author {
+    margin-bottom: 0;
+}
+
+.loading-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 0;
+    width: 100%;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f0f0f0;
+    border-top-color: var(--primary-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

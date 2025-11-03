@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebaseConfig';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import '../cv-form/FormStyles.css';
 
 const CreateReplyForm = ({ postId, onReplyAdded }) => {
@@ -13,6 +13,7 @@ const CreateReplyForm = ({ postId, onReplyAdded }) => {
     const handleSubmitReply = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         if (!currentUser) {
             setError("Musisz być zalogowany, aby dodać odpowiedź.");
@@ -32,7 +33,16 @@ const CreateReplyForm = ({ postId, onReplyAdded }) => {
                 content: content,
                 authorId: currentUser.uid,
                 authorName: currentUser.displayName || currentUser.email,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                replyCount: 0,
+                likeCount: 0,
+                likedBy: []
+            });
+
+            const postRef = doc(db, "posts", postId);
+
+            await updateDoc(postRef, {
+                replyCount: increment(1)
             });
 
             setContent("");

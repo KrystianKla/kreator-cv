@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db } from '../firebaseConfig';
-import { doc, getDoc, collection, query, orderBy, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, orderBy, getDocs, updateDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useAuth } from '../context/AuthContext';
 import CreateReplyForm from '../components/blog/CreateReplyForm';
 import './BlogPage.css';
+
+const LoadingSpinner = () => (
+    <div className="loading-spinner-container">
+        <div className="loading-spinner"></div>
+    </div>
+);
 
 const PostDetailPage = () => {
     const { postId } = useParams();
@@ -66,8 +72,41 @@ const PostDetailPage = () => {
         });
     };
 
+    const handleLikeToggle = async () => {
+        if (!currentUser) {
+            alert("Musisz być zalogowany, aby polubić post.");
+            return;
+        }
+
+        const postRef = doc(db, "posts", postId);
+        const userId = currentUser.uid;
+        const isLiked = post.likedBy?.includes(userId);
+
+        try {
+            await updateDoc(postRef, {
+                likeCount: increment(isLiked ? -1 : 1),
+                likedBy: isLiked ? arrayRemove(userId) : arrayUnion(userId)
+            });
+
+            setPost(prevPost => {
+                const currentLikedBy = prevPost.likedBy || [];
+
+                return {
+                    ...prevPost,
+                    likedBy: isLiked
+                        ? currentLikedBy.filter(uid => uid !== userId)
+                        : [...currentLikedBy, userId],
+                    likeCount: isLiked ? prevPost.likeCount - 1 : (prevPost.likeCount || 0) + 1
+                };
+            });
+
+        } catch (err) {
+            console.error("Błąd podczas przełączania polubienia:", err);
+        }
+    };
+
     if (loadingPost) {
-        return <div className="blog-container"><p>Ładowanie posta...</p></div>;
+        return <div className="blog-container"><LoadingSpinner /></div>;
     }
     if (error) {
         return <div className="blog-container"><p style={{ color: 'red' }}>{error}</p></div>;
@@ -85,6 +124,16 @@ const PostDetailPage = () => {
                 <span className="post-author">
                     Autor: {post.authorName || 'Anonim'} | Utworzono: {formatDate(post.createdAt)}
                 </span>
+                <button
+                    type="button"
+                    className={`like-button ${post.likedBy?.includes(currentUser?.uid) ? 'liked' : ''}`}
+                    onClick={handleLikeToggle}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                        <path d="M9.653 16.915l-.005-.003-.019-.01a20.759 20.759 0 01-1.162-.682 22.045 22.045 0 01-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 018-2.828A4.5 4.5 0 0118 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 01-2.582 1.9 20.753 20.753 0 01-1.162.682l-.019.01-.005.003h0z" />
+                    </svg>
+                    {post.likeCount || 0}
+                </button>
                 <hr />
                 <p className="post-content">{post.content}</p>
             </div>
@@ -102,7 +151,7 @@ const PostDetailPage = () => {
 
                 <div className="replies-list">
                     {loadingReplies ? (
-                        <p>Ładowanie odpowiedzi...</p>
+                        <LoadingSpinner />
                     ) : replies.length > 0 ? (
                         replies.map(reply => (
                             <div key={reply.id} className="reply-card">

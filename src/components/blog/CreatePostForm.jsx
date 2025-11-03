@@ -35,7 +35,8 @@ const CreatePostForm = ({ onPostCreated }) => {
                 category: category,
                 authorId: currentUser.uid,
                 authorName: currentUser.displayName || currentUser.email,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                replyCount: 0
             });
 
             setTitle("");
