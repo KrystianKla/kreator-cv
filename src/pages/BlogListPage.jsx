@@ -19,27 +19,68 @@ const getCategoryClass = (category) => {
     return `badge-${category.toLowerCase().replace(/ /g, '-')}`;
 };
 
+const formatPostTimestamp = (timestamp) => {
+    if (!timestamp || !timestamp.toDate) {
+        return '...';
+    }
+    try {
+        const date = timestamp.toDate();
+        return date.toLocaleDateString('pl-PL', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+    } catch (error) {
+        console.error("Błąd formatowania daty:", error);
+        return '...';
+    }
+};
+
 const BlogListPage = () => {
     const { currentUser } = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [filterCategory, setFilterCategory] = useState("Wszystkie");
+    const [sortBy, setSortBy] = useState("createdAt");
+    const [timeFilter, setTimeFilter] = useState("allTime");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const postsCollectionRef = collection(db, "posts");
-            let q;
+            let q = collection(db, "posts");
 
-            if (filterCategory === "Wszystkie") {
-                q = query(postsCollectionRef, orderBy("createdAt", "desc"));
-            } else {
-                q = query(
-                    postsCollectionRef,
-                    where("category", "==", filterCategory),
-                    orderBy("createdAt", "desc")
-                );
+            if (filterCategory !== "Wszystkie") {
+                q = query(q, where("category", "==", filterCategory));
+            }
+
+            let isTimeFiltered = false;
+            if (timeFilter !== "allTime" && sortBy === "createdAt") {
+                isTimeFiltered = true;
+                let startDate;
+                const now = new Date();
+
+                if (timeFilter === "lastWeek") {
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                } else if (timeFilter === "lastMonth") {
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                }
+
+                if (startDate) {
+                    q = query(q, where("createdAt", ">=", startDate));
+                }
+            }
+
+            if (sortBy === "likeCount") {
+                q = query(q, orderBy("likeCount", "desc"));
+            }
+            else if (sortBy === "replyCount") {
+                q = query(q, orderBy("replyCount", "desc"));
+            }
+            else {
+                q = query(q, orderBy("createdAt", "desc"));
             }
 
             const querySnapshot = await getDocs(q);
@@ -53,7 +94,7 @@ const BlogListPage = () => {
             console.error("Błąd podczas pobierania postów:", error);
         }
         setLoading(false);
-    }, [filterCategory]);
+    }, [filterCategory, sortBy, timeFilter]);
 
     useEffect(() => {
         fetchPosts();
@@ -109,46 +150,122 @@ const BlogListPage = () => {
         }
     };
 
+    const filteredPosts = posts.filter(post => {
+        const title = (post.title || '').toLowerCase();
+        const search = searchTerm.toLowerCase().trim();
+
+        if (!search) {
+            return true;
+        }
+
+        const words = title.split(' ');
+
+        return words.some(word => word.startsWith(search));
+    });
+
     return (
         <div className="blog-container">
             <h1>Forum / Blog</h1>
             <p>Masz pytanie odnośnie CV? A może szukasz pracy? Napisz posta!</p>
             <div className="blog-controls">
-                <div className="blog-filter-container">
-                    <span className="filter-label">Filtruj:</span>
-                    <div className="filter-buttons">
-                        {filterCategories.map(cat => (
-                            <button
-                                key={cat}
-                                type="button"
-                                className={`filter-btn ${filterCategory === cat ? 'active' : ''}`}
-                                onClick={() => setFilterCategory(cat)}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
+                <div className="blog-search-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                        <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+                    </svg>
+                    <input
+                        type="text"
+                        className="blog-search-input"
+                        placeholder="Wyszukaj w tytułach..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
 
-                {currentUser && (
-                    <div className="create-post-placeholder">
+                <div className="blog-action-buttons">
+                    <button
+                        type="button"
+                        className="btn-toggle-filters"
+                        onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    >
+                        Filtry
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" className={`filter-arrow ${showAdvancedFilters ? 'open' : ''}`}>
+                            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.23 8.29a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+
+                    {currentUser && (
                         <button
-                            className={`btn-add-section ${showForm ? 'active' : ''}`}
+                            className="btn-add-section"
                             onClick={() => setShowForm(!showForm)}
                         >
-                            {showForm ? 'Anuluj' : '+ Utwórz nowy post'}
+                            {showForm ? 'Anuluj' : '+ Utwórz post'}
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
+
+            {showAdvancedFilters && (
+                <div className="advanced-filters-panel">
+                    <div className="blog-filter-container">
+                        <span className="filter-label">Kategoria:</span>
+                        <div className="filter-buttons">
+                            {filterCategories.map(cat => (
+                                <button
+                                    key={cat}
+                                    type="button"
+                                    className={`filter-btn ${filterCategory === cat ? 'active' : ''}`}
+                                    onClick={() => setFilterCategory(cat)}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="blog-filter-container">
+                        <label htmlFor="sort-by-filter" className="filter-label">Sortuj wg:</label>
+                        <select
+                            id="sort-by-filter"
+                            className="form-select"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                        >
+                            <option value="createdAt">Najnowsze</option>
+                            <option value="likeCount">Najwięcej polubień</option>
+                            <option value="replyCount">Najwięcej odpowiedzi</option>
+                        </select>
+                    </div>
+
+                    <div className="blog-filter-container">
+                        <label htmlFor="time-filter" className="filter-label">Okres:</label>
+                        <select
+                            id="time-filter"
+                            className="form-select"
+                            value={timeFilter}
+                            onChange={(e) => setTimeFilter(e.target.value)}
+                            disabled={sortBy === "likeCount" || sortBy === "replyCount"}
+                        >
+                            <option value="allTime">Zawsze</option>
+                            <option value="lastWeek">Ostatni tydzień</option>
+                            <option value="lastMonth">Ostatni miesiąc</option>
+                        </select>
+                    </div>
+
+                    {(sortBy === "likeCount" || sortBy === "replyCount") && (
+                        <p className="filter-notice">
+                            Sortowanie po polubieniach/odpowiedziach wyłącza filtr okresu.
+                        </p>
+                    )}
+                </div>
+            )}
 
             {showForm && <CreatePostForm onPostCreated={handlePostCreated} />}
 
             <div className="post-list">
                 {loading ? (
                     <LoadingSpinner />
-                ) : posts.length > 0 ? (
-                    posts.map(post => (
+                ) : filteredPosts.length > 0 ? (
+                    filteredPosts.map(post => (
                         <Link to={`/blog/${post.id}`} key={post.id} className="post-summary-card">
                             <div className="post-card-header">
                                 <span className={`post-category-badge ${getCategoryClass(post.category)}`}>
@@ -161,6 +278,9 @@ const BlogListPage = () => {
                             </p>
                             <div className="post-footer">
                                 <span className="post-author">Autor: {post.authorName || 'Anonim'}</span>
+                                <span className="post-date">
+                                    {formatPostTimestamp(post.createdAt)}
+                                </span>
                                 <div className='post-actions'>
                                     <span className="post-reply-count">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
@@ -187,10 +307,14 @@ const BlogListPage = () => {
                         </Link>
                     ))
                 ) : (
-                    <p>Nie ma jeszcze żadnych postów. Bądź pierwszy!</p>
+                    <p>
+                        {posts.length > 0 && searchTerm
+                            ? 'Nie znaleziono postów pasujących do Twojego wyszukiwania.'
+                            : 'Nie ma jeszcze żadnych postów. Bądź pierwszy!'}
+                    </p>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 
