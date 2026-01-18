@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '../firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 
 
 const defaultCVData = {
@@ -64,26 +64,20 @@ export const CVProvider = ({ children }) => {
     if (currentUser) {
       const userDocRef = doc(db, "users", currentUser.uid);
 
-      const fetchAndMapData = async () => {
-        try {
-          const docSnap = await getDoc(userDocRef);
-
-          if (docSnap.exists()) {
-            const profileData = docSnap.data();
-            const initialCV = mapProfileToCV(profileData, currentUser);
-            setCvData(initialCV);
-
-          } else {
-            const initialCV = mapProfileToCV(null, currentUser);
-            setCvData(initialCV);
-          }
-        } catch (error) {
-          console.error("Błąd wczytywania danych profilu do CVContext:", error);
-          setCvData(defaultCVData);
+      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const profileData = docSnap.data();
+          const initialCV = mapProfileToCV(profileData, currentUser);
+          setCvData(initialCV);
+        } else {
+          const initialCV = mapProfileToCV(null, currentUser);
+          setCvData(initialCV);
         }
-      };
+      }, (error) => {
+        console.error("Błąd wczytywania danych profilu w czasie rzeczywistym:", error);
+      });
 
-      fetchAndMapData();
+      return () => unsubscribe();
 
     } else {
       setCvData(defaultCVData);
@@ -378,6 +372,7 @@ export const CVProvider = ({ children }) => {
 
   const value = {
     cvData,
+    setCvData,
     updatePersonal,
     updateSummary,
     addExperience,

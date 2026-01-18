@@ -8,6 +8,10 @@ const PersonalDetailsForm = () => {
   const { cvData, updatePersonal } = useCV();
   const { personal } = cvData;
 
+  React.useEffect(() => {
+    console.log("Dane odebrane w edytorze:", cvData.personal);
+  }, [cvData]);
+
   const handleChange = (e) => {
     updatePersonal(e.target.name, e.target.value);
   };
@@ -38,12 +42,6 @@ const PersonalDetailsForm = () => {
     const truncated = onlyNums.slice(0, 5);
     updatePersonal('postalCode', truncated);
 
-    handleInputChange({
-      target: {
-        name: 'postalCode',
-        value: truncated
-      }
-    });
   };
 
   const capitalizeFirstLetter = (string) => {

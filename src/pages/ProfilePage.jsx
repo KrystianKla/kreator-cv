@@ -23,7 +23,7 @@ Modal.setAppElement('#root');
 
 const ProfilePage = () => {
     const { currentUser, loading: authLoading } = useAuth();
-    const { cvData } = useCV();
+    const { cvData, setCvData } = useCV();
 
     const [loading, setLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -152,6 +152,16 @@ const ProfilePage = () => {
             });
 
             const userDocRef = doc(db, "users", currentUser.uid);
+            const newPersonalData = {
+                firstName: firstName,
+                lastName: lastName,
+                phone: phone,
+                countryCode: countryCode,
+                address: address,
+                postalCode: postalCode,
+                city: city,
+            };
+
             await setDoc(userDocRef, {
 
                 displayName: nick,
@@ -179,6 +189,19 @@ const ProfilePage = () => {
                 hobbies: cvData.hobbies,
 
             }, { merge: true });
+
+            if (typeof setCvData === 'function') {
+                setCvData(prev => ({
+                    ...prev,
+                    summary: summary,
+                    personal: {
+                        ...prev.personal,
+                        ...newPersonalData
+                    }
+                }));
+            } else {
+                console.warn("setCvData nie jest dostępne w CVContext!");
+            }
 
             setSuccessMessage('Profil został pomyślnie zaktualizowany!');
             setPhotoFile(null);
