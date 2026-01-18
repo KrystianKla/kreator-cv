@@ -308,3 +308,24 @@
 .ReactModal__Content .form-group {
     margin-bottom: 1.5rem;
 }
+
+.phone-input-container {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.country-code-select {
+    width: 100px !important;
+    min-width: 100px;
+    padding: 0.85rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.phone-input-container input[type="tel"] {
+    flex: 1;
+}

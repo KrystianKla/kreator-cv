@@ -9,7 +9,7 @@ const defaultCVData = {
     photo: "", firstName: "", lastName: "", position: "", email: "",
     phone: "", address: "", postalCode: "", city: "",
     drivingLicense: [], sex: "", dob: "", pob: "",
-    nationality: "", maritalStatus: "",
+    nationality: "", maritalStatus: "", countryCode: '+48',
   },
   summary: "",
   experience: [],

@@ -42,6 +42,7 @@ const ProfilePage = () => {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [countryCode, setCountryCode] = useState('+48');
     const [address, setAddress] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [city, setCity] = useState('');
@@ -69,6 +70,7 @@ const ProfilePage = () => {
                     setFirstName(data.personal?.firstName || '');
                     setLastName(data.personal?.lastName || '');
                     setPhone(data.personal?.phone || '');
+                    setCountryCode(data.personal?.countryCode || '+48');
                     setAddress(data.personal?.address || '');
                     setPostalCode(data.personal?.postalCode || '');
                     setCity(data.personal?.city || '');
@@ -93,6 +95,46 @@ const ProfilePage = () => {
         }
     };
 
+    const formatDisplayPhone = (phone) => {
+        if (!phone) return '';
+        const cleanPhone = phone.replace(/\D/g, '');
+        const parts = cleanPhone.match(/.{1,3}/g);
+        return parts ? parts.join('-') : cleanPhone;
+    };
+
+    const handleProfilePhoneChange = (e) => {
+        const onlyNums = e.target.value.replace(/\D/g, '');
+        const truncated = onlyNums.slice(0, 9);
+        setPhone(truncated);
+    };
+
+    const formatDisplayPostalCode = (code) => {
+        if (!code) return '';
+        const clean = code.replace(/\D/g, '').slice(0, 5);
+        if (clean.length > 2) {
+            return `${clean.slice(0, 2)}-${clean.slice(2, 5)}`;
+        }
+        return clean;
+    };
+
+
+    const handleProfilePostalCodeChange = (e) => {
+        const onlyNums = e.target.value.replace(/\D/g, '').slice(0, 5);
+        setPostalCode(onlyNums);
+    };
+
+    const capitalizeFirstLetter = (string) => {
+        if (!string) return '';
+
+        return string
+            .split('-')
+            .map(part => {
+                if (!part) return '';
+                return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            })
+            .join('-');
+    };
+
     const handleSaveMainProfile = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -100,26 +142,27 @@ const ProfilePage = () => {
         setErrorMessage('');
 
         if (!currentUser) { setErrorMessage('Musisz być zalogowany.'); setLoading(false); return; }
-        
+
         try {
             let updatedPhotoURL = photoURL;
 
             await updateProfile(auth.currentUser, {
                 displayName: nick,
-                photoURL: updatedPhotoURL 
+                photoURL: updatedPhotoURL
             });
 
             const userDocRef = doc(db, "users", currentUser.uid);
-            await setDoc(userDocRef, { 
-                
+            await setDoc(userDocRef, {
+
                 displayName: nick,
                 photo: photoURL,
                 summary: summary,
-                
+
                 personal: {
                     firstName: firstName,
                     lastName: lastName,
                     phone: phone,
+                    countryCode: countryCode,
                     address: address,
                     postalCode: postalCode,
                     city: city,
@@ -201,11 +244,11 @@ const ProfilePage = () => {
                             <div className="form-group-row">
                                 <div className="form-group">
                                     <label htmlFor="firstName">Imię</label>
-                                    <input type="text" id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                    <input type="text" id="firstName" value={firstName} onChange={(e) => setFirstName(capitalizeFirstLetter(e.target.value))} maxLength={30} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="lastName">Nazwisko</label>
-                                    <input type="text" id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                    <input type="text" id="lastName" value={lastName} onChange={(e) => setLastName(capitalizeFirstLetter(e.target.value))} maxLength={30} />
                                 </div>
                             </div>
                         </fieldset>
@@ -218,20 +261,39 @@ const ProfilePage = () => {
                             </div>
                             <div className="login-form-group">
                                 <label htmlFor="phone">Numer telefonu</label>
-                                <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                <div className="phone-input-container">
+                                    <select
+                                        value={countryCode}
+                                        onChange={(e) => setCountryCode(e.target.value)}
+                                        className="country-code-select"
+                                    >
+                                        <option value="+48">+48</option>
+                                        <option value="+49">+49</option>
+                                        <option value="+44">+44</option>
+                                        <option value="+1">+1</option>
+                                        <option value="+420">+420</option>
+                                    </select>
+                                    <input type="tel" id="phone" value={formatDisplayPhone(phone)} onChange={handleProfilePhoneChange} placeholder="123-456-789" />
+                                </div>
                             </div>
                             <div className="login-form-group">
                                 <label htmlFor="address">Adres</label>
-                                <input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                <input type="text" id="address" value={address} onChange={(e) => {
+                                    const formatted = capitalizeFirstLetter(e.target.value);
+                                    setAddress(formatted);
+                                }} />
                             </div>
                             <div className="form-group-row">
                                 <div className="form-group">
                                     <label htmlFor="postalCode">Kod pocztowy</label>
-                                    <input type="text" id="postalCode" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
+                                    <input type="text" id="postalCode" value={formatDisplayPostalCode(postalCode)} onChange={handleProfilePostalCodeChange} placeholder="00-001" />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="city">Miasto</label>
-                                    <input type="text" id="city" value={city} onChange={(e) => setCity(e.target.value)} />
+                                    <input type="text" id="city" value={city} onChange={(e) => {
+                                        const formatted = capitalizeFirstLetter(e.target.value);
+                                        setCity(formatted);
+                                    }} />
                                 </div>
                             </div>
                         </fieldset>

@@ -2,14 +2,25 @@ import React from 'react';
 import { useCV } from '../../context/CVContext';
 import './CVTemplate.css';
 
-// PL: Komponent wyświetlający podgląd CV na podstawie danych z globalnego kontekstu.
-// EN: Component displaying the CV preview based on data from the global context.
-
 const CVTemplate = () => {
-  // PL: Pobranie danych CV z kontekstu
-  // EN: Get CV data from the context
   const { cvData } = useCV();
-  const { personal, summary } = cvData; // PL: Skróty dla łatwiejszego dostępu / EN: Shortcuts for easier access
+  const { personal, summary } = cvData;
+
+  const formatDisplayPhone = (phone) => {
+    if (!phone) return '';
+    const cleanPhone = phone.replace(/\D/g, '');
+    const parts = cleanPhone.match(/.{1,3}/g);
+    return parts ? parts.join('-') : cleanPhone;
+  };
+
+  const formatDisplayPostalCode = (code) => {
+    if (!code) return '';
+    const clean = code.replace(/\D/g, '').slice(0, 5);
+    if (clean.length > 2) {
+      return `${clean.slice(0, 2)}-${clean.slice(2, 5)}`;
+    }
+    return clean;
+  };
 
   /**
    * PL: Funkcja pomocnicza do formatowania daty w formacie DD.MM.RRRR.
@@ -52,19 +63,11 @@ const CVTemplate = () => {
   };
 
   return (
-    // PL: Główny kontener strony CV
-    // EN: Main CV page container
     <div className="cv-preview-page">
-      {/* PL: Nagłówek CV */}
-      {/* EN: CV Header */}
       <header className="cv-header">
-        {/* PL: Warunkowe renderowanie zdjęcia profilowego */}
-        {/* EN: Conditional rendering of the profile photo */}
         {personal.photo && (
           <img src={personal.photo} alt="Zdjęcie profilowe" className="cv-photo" />
         )}
-        {/* PL: Informacje tekstowe w nagłówku */}
-        {/* EN: Text information in the header */}
         <div className="cv-header-info">
           <h1>
             {personal.firstName || 'Imię'} {personal.lastName || 'Nazwisko'}
@@ -75,23 +78,17 @@ const CVTemplate = () => {
         </div>
       </header>
 
-      {/* PL: Główna treść CV podzielona na kolumny */}
-      {/* EN: Main CV body divided into columns */}
       <main className="cv-body">
-        {/* PL: Pasek boczny (lewa kolumna) */}
-        {/* EN: Sidebar (left column) */}
         <aside className="cv-sidebar">
           <h3>Dane Osobowe</h3>
           <ul className="cv-contact-list">
-            {/* PL: Renderowanie danych kontaktowych i osobowych tylko jeśli istnieją */}
-            {/* EN: Render contact and personal details only if they exist */}
             {personal.email && <li>📧 {personal.email}</li>}
-            {personal.phone && <li>📞 {personal.phone}</li>}
+            {personal.phone && <li>📞 {personal.countryCode || '+48'} {formatDisplayPhone(personal.phone)}</li>}
             {(personal.address || personal.city) && (
               <li>
                 📍 {personal.address}
                 {personal.address && (personal.postalCode || personal.city) ? <br /> : ''}
-                {personal.postalCode} {personal.city}
+                {formatDisplayPostalCode(personal.postalCode)} {personal.city}
               </li>
             )}
             {personal.dob && <li><b>Data urodzenia:</b> {formatDate(personal.dob)}</li>}
@@ -104,8 +101,6 @@ const CVTemplate = () => {
             )}
           </ul>
 
-          {/* PL: Sekcja Linki / Media Społecznościowe (jeśli istnieją) */}
-          {/* EN: Links / Social Media section (if exists) */}
           {cvData.socials && cvData.socials.length > 0 && (
             <div className="cv-sidebar-section" style={{ paddingTop: '1rem' }}>
               <h3>Linki</h3>
@@ -122,8 +117,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Umiejętności (jeśli istnieją) */}
-          {/* EN: Skills section (if exists) */}
           {cvData.skills && cvData.skills.length > 0 && (
             <div className="cv-sidebar-section">
               <h3>Umiejętności</h3>
@@ -145,8 +138,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Języki (jeśli istnieją) */}
-          {/* EN: Languages section (if exists) */}
           {cvData.languages && cvData.languages.length > 0 && (
             <div className="cv-sidebar-section">
               <h3>Języki</h3>
@@ -161,8 +152,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Zainteresowania (jeśli istnieje) */}
-          {/* EN: Hobbies section (if exists) */}
           {cvData.hobbies && (
             <div className="cv-sidebar-section">
               <h3>Zainteresowania</h3>
@@ -173,12 +162,7 @@ const CVTemplate = () => {
           )}
         </aside>
 
-        {/* PL: Główna treść (prawa kolumna) */}
-        {/* EN: Main content (right column) */}
         <section className="cv-main-content">
-
-          {/* PL: Sekcja Profil Osobisty (jeśli istnieje) */}
-          {/* EN: Profile Summary section (if exists) */}
           {summary && (
             <div className="cv-section">
               <h3>Profil Osobisty</h3>
@@ -186,8 +170,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Staże (jeśli istnieją) */}
-          {/* EN: Internships section (if exists) */}
           {cvData.internships && cvData.internships.length > 0 && (
             <div className="cv-section">
               <h3>Staże</h3>
@@ -211,8 +193,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Doświadczenie Zawodowe (jeśli istnieje) */}
-          {/* EN: Work Experience section (if exists) */}
           {cvData.experience && cvData.experience.length > 0 ? (
             <div className="cv-section">
               <h3>Doświadczenie Zawodowe</h3>
@@ -235,17 +215,12 @@ const CVTemplate = () => {
               ))}
             </div>
           ) : (
-            // PL: Placeholder, jeśli nie ma doświadczenia
-            // EN: Placeholder if no experience exists
             <div className="cv-section">
               <h3>Doświadczenie Zawodowe</h3>
               <p className="placeholder-text">(Miejsce na Twoje doświadczenie)</p>
             </div>
           )}
 
-
-          {/* PL: Sekcja Edukacja (jeśli istnieje) */}
-          {/* EN: Education section (if exists) */}
           {cvData.education && cvData.education.length > 0 ? (
             <div className="cv-section">
               <h3>Edukacja</h3>
@@ -268,17 +243,12 @@ const CVTemplate = () => {
               ))}
             </div>
           ) : (
-            // PL: Placeholder, jeśli nie ma edukacji
-            // EN: Placeholder if no education exists
             <div className="cv-section">
               <h3>Edukacja</h3>
               <p className="placeholder-text">(Miejsce na Twoją edukację)</p>
             </div>
           )}
 
-
-          {/* PL: Sekcja Kursy (jeśli istnieją) */}
-          {/* EN: Courses section (if exists) */}
           {cvData.courses && cvData.courses.length > 0 && (
             <div className="cv-section">
               <h3>Kursy</h3>
@@ -301,8 +271,6 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {/* PL: Sekcja Certyfikaty (jeśli istnieją) */}
-          {/* EN: Certificates section (if exists) */}
           {cvData.certificates && cvData.certificates.length > 0 && (
             <div className="cv-section">
               <h3>Certyfikaty</h3>
