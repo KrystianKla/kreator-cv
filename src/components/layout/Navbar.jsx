@@ -2,11 +2,6 @@ import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-// PL: Komponent paska nawigacyjnego (Navbar) aplikacji.
-// Wyświetla linki oraz stan logowania użytkownika.
-// EN: Application Navigation Bar (Navbar) component.
-// Displays links and user authentication status.
-
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
@@ -14,8 +9,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      // PL: Przekieruj na stronę główną po pomyślnym wylogowaniu
-      // EN: Redirect to the homepage after successful logout
       navigate('/');
       console.log('User logged out successfully.');
     } catch (error) {
@@ -41,13 +34,18 @@ const Navbar = () => {
             <span style={{ marginRight: '1rem', fontWeight: '500' }}>
               Witaj, {currentUser.displayName || currentUser.email}!
             </span>
+            <NavLink
+              to="/profil"
+              className="btn-add-section"
+              style={{ marginRight: '1rem' }}
+            >
+              Mój Profil
+            </NavLink>
             <button onClick={handleLogout} className="btn btn-login">
               Wyloguj
             </button>
           </>
         ) : (
-          // PL: Jeśli użytkownik NIE jest zalogowany
-          // EN: If user is NOT logged in
           <Link to="/login" className="btn btn-login">
             Zaloguj się
           </Link>

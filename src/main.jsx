@@ -7,21 +7,17 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { CVProvider } from './context/CVContext';
 import './print.css';
 import { AuthProvider } from './context/AuthContext';
+import './Modal.css';
 
-// PL: Renderowanie głównego komponentu aplikacji w DOM
-// EN: Rendering the main application component into the DOM
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* PL: BrowserRouter umożliwia routing po stronie klienta */}
-    {/* EN: BrowserRouter enables client-side routing */}
     <BrowserRouter>
-      {/* PL: CVProvider udostępnia stan danych CV całej aplikacji */}
-      {/* EN: CVProvider makes the CV data state available to the entire application */}
-      <CVProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <CVProvider>
           <App />
-        </AuthProvider>
-      </CVProvider>
+        </CVProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );
