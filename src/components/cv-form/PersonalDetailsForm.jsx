@@ -1,5 +1,7 @@
 import React from 'react';
 import { useCV } from '../../context/CVContext';
+import FormSection from '../ui/FormSection';
+import FormField from '../ui/FormField';
 import './FormStyles.css';
 
 const drivingLicenseCategories = ['A', 'A1', 'A2', 'AM', 'B', 'B1', 'C', 'C1', 'D', 'D1', 'BE', 'CE', 'DE', 'T'];
@@ -8,53 +10,7 @@ const PersonalDetailsForm = () => {
   const { cvData, updatePersonal } = useCV();
   const { personal } = cvData;
 
-  React.useEffect(() => {
-    console.log("Dane odebrane w edytorze:", cvData.personal);
-  }, [cvData]);
-
-  const handleChange = (e) => {
-    updatePersonal(e.target.name, e.target.value);
-  };
-
-  const handlePhoneChange = (e) => {
-    const onlyNums = e.target.value.replace(/\D/g, '');
-    const truncated = onlyNums.slice(0, 9);
-    updatePersonal('phone', truncated);
-  };
-
-  const formatDisplayPhone = (phone) => {
-    if (!phone) return '';
-    const parts = phone.match(/.{1,3}/g);
-    return parts ? parts.join('-') : phone;
-  };
-
-  const formatDisplayPostalCode = (code) => {
-    if (!code) return '';
-    const clean = code.replace(/\D/g, '');
-    if (clean.length > 2) {
-      return `${clean.slice(0, 2)}-${clean.slice(2, 5)}`;
-    }
-    return clean;
-  };
-
-  const handlePostalCodeChange = (e) => {
-    const onlyNums = e.target.value.replace(/\D/g, '');
-    const truncated = onlyNums.slice(0, 5);
-    updatePersonal('postalCode', truncated);
-
-  };
-
-  const capitalizeFirstLetter = (string) => {
-    if (!string) return '';
-
-    return string
-      .split('-')
-      .map(part => {
-        if (!part) return '';
-        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-      })
-      .join('-');
-  };
+  const capitalize = (str) => str.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('-');
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -67,174 +23,137 @@ const PersonalDetailsForm = () => {
     }
   };
 
-  const handleDrivingLicenseChange = (e) => {
-    const { value, checked } = e.target;
-    const currentLicenses = [...personal.drivingLicense];
-
-    if (checked) {
-      currentLicenses.push(value);
-    } else {
-      const index = currentLicenses.indexOf(value);
-      if (index > -1) {
-        currentLicenses.splice(index, 1);
-      }
-    }
-    updatePersonal('drivingLicense', currentLicenses);
+  const handlePhoneChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+    updatePersonal('phone', val);
   };
 
-  return (
-    <fieldset className="form-section">
-      <legend>Dane Osobowe</legend>
+  const handlePostalCodeChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 5);
+    updatePersonal('postalCode', val);
+  };
 
+  const formatPhone = (p) => p ? p.match(/.{1,3}/g).join('-') : '';
+  const formatPostal = (c) => c && c.length > 2 ? `${c.slice(0, 2)}-${c.slice(2, 5)}` : c;
+
+  return (
+    <FormSection title="Dane Osobowe">
       <div className="form-group">
-        <label htmlFor="photo">Zdjęcie (opcjonalnie)</label>
+        <label htmlFor="photo">Zdjęcie profilowe</label>
         <input
           type="file"
           id="photo"
-          name="photo"
-          onChange={handlePhotoChange}
           accept="image/png, image/jpeg"
+          onChange={handlePhotoChange}
+          className="file-input"
         />
       </div>
 
       <div className="form-group-row">
-        <div className="form-group">
-          <label htmlFor="firstName">Imię</label>
-          <input type="text" id="firstName" name="firstName" value={personal.firstName}
-            onChange={(e) => {
-              const formatted = capitalizeFirstLetter(e.target.value);
-              updatePersonal('firstName', formatted);
-            }}
-            maxLength={30} placeholder="Jan" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="lastName">Nazwisko</label>
-          <input type="text" id="lastName" name="lastName" value={personal.lastName}
-            onChange={(e) => {
-              const formatted = capitalizeFirstLetter(e.target.value);
-              updatePersonal('lastName', formatted);
-            }}
-            maxLength={30} placeholder="Kowalski" />
-        </div>
+        <FormField
+          label="Imię"
+          id="firstName"
+          value={personal.firstName}
+          onChange={(e) => updatePersonal('firstName', capitalize(e.target.value))}
+          placeholder="Jan"
+          maxLength={30}
+        />
+        <FormField
+          label="Nazwisko"
+          id="lastName"
+          value={personal.lastName}
+          onChange={(e) => updatePersonal('lastName', capitalize(e.target.value))}
+          placeholder="Kowalski"
+          maxLength={30}
+        />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="position">Stanowisko (np. Frontend Developer)</label>
-        <input type="text" id="position" name="position" value={personal.position}
-          onChange={(e) => updatePersonal('position', capitalizeFirstLetter(e.target.value))}
-          placeholder="Frontend Developer" />
-      </div>
+      <FormField
+        label="Stanowisko"
+        id="position"
+        value={personal.position}
+        onChange={(e) => updatePersonal('position', capitalize(e.target.value))}
+        placeholder="np. Senior Frontend Developer"
+        maxLength={50}
+      />
 
       <div className="form-group-row">
+        <FormField
+          label="Email"
+          id="email"
+          type="email"
+          value={personal.email}
+          onChange={(e) => updatePersonal('email', e.target.value)}
+          placeholder="jan@mail.com"
+        />
         <div className="form-group">
-          <label htmlFor="email">Adres e-mail</label>
-          <input type="email" id="email" name="email" value={personal.email} onChange={handleChange} placeholder="jan@mail.com" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="phone">Numer telefonu</label>
+          <label>Telefon</label>
           <div className="phone-input-container">
             <select
-              name="countryCode"
               value={personal.countryCode || '+48'}
-              onChange={handleChange}
+              onChange={(e) => updatePersonal('countryCode', e.target.value)}
               className="country-code-select"
-              style={{ width: '85px' }}
             >
               <option value="+48">+48</option>
               <option value="+49">+49</option>
               <option value="+44">+44</option>
               <option value="+1">+1</option>
-              <option value="+420">+420</option>
             </select>
-            <input type="tel" id="phone" name="phone" value={formatDisplayPhone(personal.phone)} onChange={handlePhoneChange} placeholder="123 456 789" />
+            <input
+              type="tel"
+              value={formatPhone(personal.phone)}
+              onChange={handlePhoneChange}
+              placeholder="123-456-789"
+            />
           </div>
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="address">Adres (ulica i numer)</label>
-        <input type="text" id="address" name="address" value={personal.address} onChange={handleChange} placeholder="ul. Wesoła 10/5" />
-      </div>
+      <FormField
+        label="Adres"
+        id="address"
+        value={personal.address}
+        onChange={(e) => updatePersonal('address', e.target.value)}
+        placeholder="ul. Wesoła 10/5"
+      />
 
       <div className="form-group-row">
-        <div className="form-group">
-          <label htmlFor="postalCode">Kod pocztowy</label>
-          <input type="text" id="postalCode" name="postalCode" value={formatDisplayPostalCode(cvData.personal.postalCode)} onChange={handlePostalCodeChange} placeholder="00-001" maxLength={6} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="city">Miasto</label>
-          <input type="text" id="city" name="city" value={personal.city} onChange={(e) => {
-            const formatted = capitalizeFirstLetter(e.target.value);
-            updatePersonal('city', formatted);
-          }} placeholder="Warszawa" />
-        </div>
-      </div>
-
-      <div className="form-group-row">
-        <div className="form-group">
-          <label htmlFor="dob">Data urodzenia</label>
-          <input type="date" id="dob" name="dob" value={personal.dob} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="pob">Miejsce urodzenia</label>
-          <input type="text" id="pob" name="pob" value={personal.pob} onChange={(e) => {
-            const formatted = capitalizeFirstLetter(e.target.value);
-            updatePersonal('pob', formatted);
-          }} placeholder="Gdańsk" />
-        </div>
-      </div>
-
-      <div className="form-group-row">
-        <div className="form-group">
-          <label htmlFor="sex">Płeć</label>
-          <select id="sex" name="sex" value={personal.sex} onChange={handleChange}>
-            <option value="">Wybierz...</option>
-            <option value="Kobieta">Kobieta</option>
-            <option value="Mężczyzna">Mężczyzna</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="maritalStatus">Stan cywilny</label>
-          <select id="maritalStatus" name="maritalStatus" value={personal.maritalStatus} onChange={handleChange}>
-            <option value="">Wybierz...</option>
-            <option value="Kawaler/Panna">Kawaler/Panna</option>
-            <option value="Żonaty/Mężatka">Żonaty/Mężatka</option>
-            <option value="W separacji">W separacji</option>
-            <option value="Rozwiedziony/Rozwiedziona">Rozwiedziony/Rozwiedziona</option>
-            <option value="Wdowiec/Wdowa">Wdowiec/Wdowa</option>
-          </select>
-        </div>
+        <FormField
+          label="Kod pocztowy"
+          id="postalCode"
+          value={formatPostal(personal.postalCode)}
+          onChange={handlePostalCodeChange}
+          placeholder="00-001"
+        />
+        <FormField
+          label="Miasto"
+          id="city"
+          value={personal.city}
+          onChange={(e) => updatePersonal('city', capitalize(e.target.value))}
+          placeholder="Warszawa"
+        />
       </div>
 
       <div className="form-group">
-        <label htmlFor="nationality">Narodowość</label>
-        <input type="text" id="nationality" name="nationality" value={personal.nationality}
-          onChange={(e) => {
-            const onlyLetters = e.target.value.replace(/[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ-]/g, '');
-            const formatted = capitalizeFirstLetter(onlyLetters);
-            updatePersonal('nationality', formatted);
-          }}
-          placeholder="Polska" />
-      </div>
-
-      <div className="form-group">
-        <label>Prawo jazdy (zaznacz posiadane kategorie)</label>
+        <label>Prawo jazdy</label>
         <div className="checkbox-group">
           {drivingLicenseCategories.map(cat => (
             <label key={cat} className="checkbox-label">
               <input
                 type="checkbox"
-                value={cat}
-                checked={personal.drivingLicense.includes(cat)}
-                onChange={handleDrivingLicenseChange}
+                checked={personal.drivingLicense?.includes(cat)}
+                onChange={(e) => {
+                  const current = [...(personal.drivingLicense || [])];
+                  const next = e.target.checked ? [...current, cat] : current.filter(c => c !== cat);
+                  updatePersonal('drivingLicense', next);
+                }}
               />
               <span>{cat}</span>
             </label>
           ))}
         </div>
       </div>
-
-    </fieldset>
+    </FormSection>
   );
 };
 

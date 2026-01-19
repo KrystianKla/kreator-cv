@@ -1,9 +1,9 @@
 import React from 'react';
 import { useCV } from '../../context/CVContext';
+import FormSection from '../ui/FormSection';
+import FormField from '../ui/FormField';
 import './FormStyles.css';
 
-// PL: Poziomy biegłości językowej wg skali CEFR
-// EN: Language proficiency levels based on the CEFR scale
 const proficiencyLevels = [
   'Początkujący (A1)',
   'Podstawowy (A2)',
@@ -13,63 +13,36 @@ const proficiencyLevels = [
   'Poziom ojczysty (C2)',
 ];
 
-// PL: Komponent formularza dla sekcji "Języki".
-// EN: Form component for the "Languages" section.
-
 const LanguagesForm = () => {
-  // PL: Pobranie stanu i funkcji z globalnego kontekstu CV
-  // EN: Get state and functions from the global CV context
   const { cvData, addLanguage, removeLanguage, updateLanguage, toggleSection } = useCV();
 
-  // PL: Handler do aktualizacji pól formularza (nazwa języka, poziom)
-  // EN: Handler to update form fields (language name, level)
-  const handleChange = (id, e) => {
-    updateLanguage(id, e.target.name, e.target.value);
-  };
-
   return (
-    <fieldset className="form-section">
-      <legend>
-        Języki
-        <button
-          type="button"
-          className="btn-remove-section"
-          title="Ukryj tę sekcję"
-          onClick={() => toggleSection('Języki')}
-        >
-          ×
-        </button>
-      </legend>
-
-      <p className="section-description">
-        Wymień języki, którymi się posługujesz, i określ swój poziom.
-      </p>
-
-      {/* PL: Kontener na listę języków, używa stylów z sekcji Umiejętności */}
-      {/* EN: Container for the language list, uses styles from the Skills section */}
+    <FormSection
+      title="Języki"
+      description="Wymień języki, którymi się posługujesz, i określ swój poziom biegłości."
+      onRemove={() => toggleSection('Języki')}
+    >
       <div className="skills-list">
         {cvData.languages.map((lang) => (
           <div key={lang.id} className="skill-entry">
-            <div className="form-group">
-              <input
-                type="text"
-                name="name"
-                value={lang.name}
-                onChange={(e) => handleChange(lang.id, e)}
-                placeholder="Np. Angielski"
-              />
-            </div>
+            <FormField
+              placeholder="Np. Angielski"
+              value={lang.name}
+              onChange={(e) => updateLanguage(lang.id, 'name', e.target.value)}
+            />
 
-            <select
-              name="level"
-              value={lang.level}
-              onChange={(e) => handleChange(lang.id, e)}
-              className="form-select"
-            >
-              {proficiencyLevels.map(level => (
-                <option key={level} value={level}>{level}</option>
-              ))}
-            </select>
+            <div className="form-group">
+              <select
+                value={lang.level}
+                onChange={(e) => updateLanguage(lang.id, 'level', e.target.value)}
+                className="form-select"
+              >
+                <option value="" disabled>Poziom...</option>
+                {proficiencyLevels.map(level => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+            </div>
 
             <button
               type="button"
@@ -82,14 +55,10 @@ const LanguagesForm = () => {
         ))}
       </div>
 
-      <button
-        type="button"
-        className="btn-add"
-        onClick={addLanguage}
-      >
+      <button type="button" className="btn-add" onClick={addLanguage}>
         + Dodaj język
       </button>
-    </fieldset>
+    </FormSection>
   );
 };
 

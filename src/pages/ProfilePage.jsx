@@ -13,6 +13,7 @@ import InternshipsForm from '../components/cv-form/InternshipsForm';
 import LanguagesForm from '../components/cv-form/LanguagesForm';
 import SocialsForm from '../components/cv-form/SocialsForm';
 import HobbiesForm from '../components/cv-form/HobbiesForm';
+import SectionModal from '../components/ui/SectionModal';
 import '../components/cv-form/FormStyles.css';
 import './ProfilePage.css';
 import { useCV } from '../context/CVContext';
@@ -214,6 +215,34 @@ const ProfilePage = () => {
         }
     };
 
+    const modalConfigs = [
+        {
+            id: 'summary',
+            title: 'Profil Osobisty',
+            isLarge: false,
+            content: (
+                <div className="form-group">
+                    <textarea
+                        className="profile-summary-textarea"
+                        rows="10"
+                        value={summary}
+                        onChange={(e) => setSummary(e.target.value)}
+                        placeholder="Napisz o sobie..."
+                    />
+                </div>
+            )
+        },
+        { id: 'experience', title: 'Doświadczenie Zawodowe', isLarge: true, content: <ExperienceForm /> },
+        { id: 'education', title: 'Edukacja', isLarge: true, content: <EducationForm /> },
+        { id: 'skills', title: 'Umiejętności', isLarge: false, content: <SkillsForm /> },
+        { id: 'languages', title: 'Języki', isLarge: false, content: <LanguagesForm /> },
+        { id: 'courses', title: 'Kursy', isLarge: true, content: <CoursesForm /> },
+        { id: 'certificates', title: 'Certyfikaty', isLarge: true, content: <CertificatesForm /> },
+        { id: 'internships', title: 'Staże', isLarge: true, content: <InternshipsForm /> },
+        { id: 'socials', title: 'Linki / Social Media', isLarge: false, content: <SocialsForm /> },
+        { id: 'hobbies', title: 'Zainteresowania', isLarge: false, content: <HobbiesForm /> },
+    ];
+
     const renderSectionTrigger = (title, description, modalName) => (
         <fieldset className="form-section profile-section-trigger">
             <div className="section-trigger-header">
@@ -343,67 +372,17 @@ const ProfilePage = () => {
                 </aside>
             </main>
 
-            <Modal isOpen={modals.summary} onRequestClose={() => toggleModal('summary', false)} className="modal-content" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Profil Osobisty</h2><button className="btn-close-modal" onClick={() => toggleModal('summary', false)}>×</button></div>
-                <div className="form-group">
-                    <textarea className="profile-summary-textarea" rows="10" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Napisz o sobie..." />
-                </div>
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('summary', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.experience} onRequestClose={() => toggleModal('experience', false)} className="modal-content modal-content-large" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Doświadczenie Zawodowe</h2><button className="btn-close-modal" onClick={() => toggleModal('experience', false)}>×</button></div>
-                <ExperienceForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('experience', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.education} onRequestClose={() => toggleModal('education', false)} className="modal-content modal-content-large" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Edukacja</h2><button className="btn-close-modal" onClick={() => toggleModal('education', false)}>×</button></div>
-                <EducationForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('education', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.skills} onRequestClose={() => toggleModal('skills', false)} className="modal-content" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Umiejętności</h2><button className="btn-close-modal" onClick={() => toggleModal('skills', false)}>×</button></div>
-                <SkillsForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('skills', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.courses} onRequestClose={() => toggleModal('courses', false)} className="modal-content modal-content-large" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Kursy</h2><button className="btn-close-modal" onClick={() => toggleModal('courses', false)}>×</button></div>
-                <CoursesForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('courses', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.certificates} onRequestClose={() => toggleModal('certificates', false)} className="modal-content modal-content-large" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Certyfikaty</h2><button className="btn-close-modal" onClick={() => toggleModal('certificates', false)}>×</button></div>
-                <CertificatesForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('certificates', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.internships} onRequestClose={() => toggleModal('internships', false)} className="modal-content modal-content-large" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Staże</h2><button className="btn-close-modal" onClick={() => toggleModal('internships', false)}>×</button></div>
-                <InternshipsForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('internships', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.languages} onRequestClose={() => toggleModal('languages', false)} className="modal-content" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Języki</h2><button className="btn-close-modal" onClick={() => toggleModal('languages', false)}>×</button></div>
-                <LanguagesForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('languages', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.socials} onRequestClose={() => toggleModal('socials', false)} className="modal-content" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Linki / Social Media</h2><button className="btn-close-modal" onClick={() => toggleModal('socials', false)}>×</button></div>
-                <SocialsForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('socials', false)}>Zamknij</button></div>
-            </Modal>
-
-            <Modal isOpen={modals.hobbies} onRequestClose={() => toggleModal('hobbies', false)} className="modal-content" overlayClassName="modal-overlay">
-                <div className="modal-header"><h2>Zainteresowania</h2><button className="btn-close-modal" onClick={() => toggleModal('hobbies', false)}>×</button></div>
-                <HobbiesForm />
-                <div className="modal-actions"><button className="btn-save-profile" onClick={() => toggleModal('hobbies', false)}>Zamknij</button></div>
-            </Modal>
+            {modalConfigs.map((config) => (
+                <SectionModal
+                    key={config.id}
+                    isOpen={modals[config.id]}
+                    onClose={() => toggleModal(config.id, false)}
+                    title={config.title}
+                    isLarge={config.isLarge}
+                >
+                    {config.content}
+                </SectionModal>
+            ))}
 
         </div>
     );
