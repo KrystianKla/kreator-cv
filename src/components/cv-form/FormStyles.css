@@ -340,3 +340,134 @@
 .country-code-select {
   flex: 0 0 90px;
 }
+
+.hidden-file-input {
+  display: none !important;
+}
+
+/* Kontener wewnątrz Modala */
+.documents-modal-content {
+  padding: 5px;
+}
+
+.upload-zone-modal {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+/* Przycisk Dodaj Plik */
+.btn-add-file-styled {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background-color: transparent;
+  border: 2px dashed var(--primary-green);
+  border-radius: 8px;
+  color: var(--primary-green);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-file-styled:hover {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-style: solid;
+}
+
+/* Lista i Karty Dokumentów */
+.document-card-horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.doc-main-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+  /* Pozwala na ucinanie tekstu */
+}
+
+.pdf-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.doc-name-text {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    
+    /* Magia ucinania tekstu */
+    white-space: nowrap;      /* Nie pozwól na zawijanie do nowej linii */
+    overflow: hidden;         /* Ukryj to, co wystaje */
+    text-overflow: ellipsis;  /* Dodaj wielokropek (...) */
+    display: block;
+    width: 100%;
+}
+
+.doc-meta-text {
+  margin: 2px 0 0 0;
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.doc-actions-group {
+  display: flex;
+  gap: 15px;
+  margin-left: 0px;
+}
+
+.action-icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.action-icon-btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.action-icon-btn.delete:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.no-docs-text {
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 20px;
+}
+
+.doc-details {
+    flex: 1;
+    min-width: 0; 
+    margin-right: 15px; /* Odstęp od przycisków akcji */
+}

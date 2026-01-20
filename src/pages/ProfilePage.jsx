@@ -4,6 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { db, auth } from '../firebaseConfig';
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from '../firebaseConfig';
+import { useCV } from '../context/CVContext';
+
+// Komponenty formularzy
 import ExperienceForm from '../components/cv-form/ExperienceForm';
 import EducationForm from '../components/cv-form/EducationForm';
 import SkillsForm from '../components/cv-form/SkillsForm';
@@ -14,16 +19,18 @@ import LanguagesForm from '../components/cv-form/LanguagesForm';
 import SocialsForm from '../components/cv-form/SocialsForm';
 import HobbiesForm from '../components/cv-form/HobbiesForm';
 import SectionModal from '../components/ui/SectionModal';
+import DocumentsForm from '../components/cv-form/DocumentsForm';
+
+// Style
 import '../components/cv-form/FormStyles.css';
 import './ProfilePage.css';
-import { useCV } from '../context/CVContext';
 
 const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTEyIDJDNi40OCA5LjE4IDIgMTQuNTQgMiAxMGMwIDUuMjUgMy43MyAxMCA5LjI1IDEwQzE3LjA1IDIwIDIxIDE1LjcyIDIxIDEwYzAtNC41NC00LjQ4LTcuODItOS45Ny03Ljk5QTkuNDQgOS40NCAwIDAwMTIgMnpNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDR6bTAtMmMxLjEgMCAyIC45IDIgMnMtLjkgMi0yIDItMi0uOS0yLTIgLjktMiAyIDJ6bTAtMmMtMi42NyAwLTggMS4zNC04IDR2MmgxNnYtMmMwLTIuNjYtNS4zMy00LTgtNHptLTZgMmMuMi0uNzEgMy4zLTEuNzUgNi0xLjc1czUuOCAxLjA0IDYgMS43NVYxOEg2di0yek0xMiA5LjVjMS4zOCAwIDIuNS0xLjEyIDIuNS0yLjVTMTMuMzggNSAxMiA1cy0yLjUgMS4xMi0yLjUgMi41IDEuMTIgMi41IDIuNSAyLjV6Ii8+PC9zdmc+';
 
 Modal.setAppElement('#root');
 
 const ProfilePage = () => {
-    const { currentUser, loading: authLoading } = useAuth();
+    const { currentUser } = useAuth();
     const { cvData, setCvData } = useCV();
 
     const [loading, setLoading] = useState(false);
@@ -33,7 +40,7 @@ const ProfilePage = () => {
     const [modals, setModals] = useState({
         summary: false, experience: false, education: false, skills: false,
         courses: false, certificates: false, internships: false,
-        languages: false, socials: false, hobbies: false,
+        languages: false, socials: false, hobbies: false, documents: false,
     });
 
     const [photoURL, setPhotoURL] = useState(null);
@@ -50,12 +57,10 @@ const ProfilePage = () => {
     const [summary, setSummary] = useState('');
     const photoInputRef = useRef(null);
 
-
     const toggleModal = (modalName, isOpen) => {
         setModals(prev => ({ ...prev, [modalName]: isOpen }));
         if (isOpen) { setSuccessMessage(''); setErrorMessage(''); }
     };
-
 
     useEffect(() => {
         if (!currentUser) return;
@@ -67,6 +72,8 @@ const ProfilePage = () => {
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+
+                    // 1. Aktualizacja lokalnych stanów formularza podstawowego
                     setNick(data.displayName || currentUser.displayName || '');
                     setFirstName(data.personal?.firstName || '');
                     setLastName(data.personal?.lastName || '');
@@ -77,6 +84,25 @@ const ProfilePage = () => {
                     setCity(data.personal?.city || '');
                     setSummary(data.summary || '');
                     setPhotoURL(data.photo || currentUser.photoURL);
+
+                    // 2. KLUCZOWA ZMIANA: Przesłanie wszystkich danych do CVContext
+                    // Dzięki temu DocumentsForm i licznik w Sidebarze zobaczą dane z bazy
+                    if (typeof setCvData === 'function') {
+                        setCvData({
+                            summary: data.summary || '',
+                            personal: data.personal || {},
+                            experience: data.experience || [],
+                            education: data.education || [],
+                            skills: data.skills || [],
+                            languages: data.languages || [],
+                            courses: data.courses || [],
+                            certificates: data.certificates || [],
+                            internships: data.internships || [],
+                            socials: data.socials || [],
+                            hobbies: data.hobbies || [],
+                            documents: data.documents || [], // To naprawi Twój licznik
+                        });
+                    }
                 } else {
                     setNick(currentUser.displayName || '');
                     setPhotoURL(currentUser.photoURL);
@@ -86,7 +112,7 @@ const ProfilePage = () => {
             }
         };
         fetchUserData();
-    }, [currentUser]);
+    }, [currentUser, setCvData]); // Dodaj setCvData do zależności
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
@@ -118,7 +144,6 @@ const ProfilePage = () => {
         return clean;
     };
 
-
     const handleProfilePostalCodeChange = (e) => {
         const onlyNums = e.target.value.replace(/\D/g, '').slice(0, 5);
         setPostalCode(onlyNums);
@@ -126,7 +151,6 @@ const ProfilePage = () => {
 
     const capitalizeFirstLetter = (string) => {
         if (!string) return '';
-
         return string
             .split('-')
             .map(part => {
@@ -145,71 +169,69 @@ const ProfilePage = () => {
         if (!currentUser) { setErrorMessage('Musisz być zalogowany.'); setLoading(false); return; }
 
         try {
-            let updatedPhotoURL = photoURL;
+            let finalPhotoURL = photoURL;
 
+            // Wgrywanie zdjęcia do Storage jeśli zostało zmienione
+            if (photoFile) {
+                const storageRef = ref(storage, `avatars/${currentUser.uid}`);
+                await uploadBytes(storageRef, photoFile);
+                finalPhotoURL = await getDownloadURL(storageRef);
+            }
+
+            // Aktualizacja profilu Auth
             await updateProfile(auth.currentUser, {
                 displayName: nick,
-                photoURL: updatedPhotoURL
+                photoURL: finalPhotoURL
             });
 
             const userDocRef = doc(db, "users", currentUser.uid);
+
             const newPersonalData = {
-                firstName: firstName,
-                lastName: lastName,
-                phone: phone,
-                countryCode: countryCode,
-                address: address,
-                postalCode: postalCode,
-                city: city,
+                firstName,
+                lastName,
+                phone,
+                countryCode,
+                address,
+                postalCode,
+                city,
+                photo: finalPhotoURL // Stały link do obiektu personal
             };
 
+            // Zapis do Firestore
             await setDoc(userDocRef, {
-
                 displayName: nick,
-                photo: photoURL,
+                photo: finalPhotoURL, // Stały link główny
                 summary: summary,
-
-                personal: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    phone: phone,
-                    countryCode: countryCode,
-                    address: address,
-                    postalCode: postalCode,
-                    city: city,
-                },
-
-                experience: cvData.experience,
-                education: cvData.education,
-                skills: cvData.skills,
-                courses: cvData.courses,
-                certificates: cvData.certificates,
-                internships: cvData.internships,
-                languages: cvData.languages,
-                socials: cvData.socials,
-                hobbies: cvData.hobbies,
-
+                personal: newPersonalData,
+                experience: cvData.experience || [],
+                education: cvData.education || [],
+                skills: cvData.skills || [],
+                courses: cvData.courses || [],
+                certificates: cvData.certificates || [],
+                internships: cvData.internships || [],
+                languages: cvData.languages || [],
+                socials: cvData.socials || [],
+                hobbies: cvData.hobbies || [],
+                documents: cvData.documents || []
             }, { merge: true });
 
+            // Aktualizacja Contextu
             if (typeof setCvData === 'function') {
                 setCvData(prev => ({
                     ...prev,
                     summary: summary,
-                    personal: {
-                        ...prev.personal,
-                        ...newPersonalData
-                    }
+                    photo: finalPhotoURL,
+                    personal: newPersonalData
                 }));
-            } else {
-                console.warn("setCvData nie jest dostępne w CVContext!");
             }
 
-            setSuccessMessage('Profil został pomyślnie zaktualizowany!');
+            setPhotoURL(finalPhotoURL);
             setPhotoFile(null);
+            setSuccessMessage('Profil został pomyślnie zaktualizowany!');
 
         } catch (error) {
             console.error("Błąd zapisu profilu:", error);
-            setErrorMessage('Wystąpił błąd podczas zapisywania.');
+            setErrorMessage(`Wystąpił błąd: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -241,6 +263,7 @@ const ProfilePage = () => {
         { id: 'internships', title: 'Staże', isLarge: true, content: <InternshipsForm /> },
         { id: 'socials', title: 'Linki / Social Media', isLarge: false, content: <SocialsForm /> },
         { id: 'hobbies', title: 'Zainteresowania', isLarge: false, content: <HobbiesForm /> },
+        { id: 'documents', title: 'Moje Dokumenty', isLarge: false, content: <DocumentsForm /> },
     ];
 
     const renderSectionTrigger = (title, description, modalName) => (
@@ -270,9 +293,30 @@ const ProfilePage = () => {
                     <input
                         type="file" id="photo-upload-input" accept="image/png, image/jpeg"
                         onChange={handlePhotoChange} ref={photoInputRef}
+                        style={{ display: 'none' }}
                     />
                     <h2>{nick || 'Nazwa użytkownika'}</h2>
                     <p>{email}</p>
+                </div>
+
+                <div className="info-box-mini sidebar-info-margin">
+                    <span className="info-box-icon">💡</span>
+                    <div>
+                        <h4>Twoje dokumenty</h4>
+                        <p>Tutaj możesz zarządzać plikami PDF, takimi jak certyfikaty i dyplomy, aby dołączyć je do swojego CV.</p>
+                    </div>
+                </div>
+
+                <div className="sidebar-section-box">
+                    <div className="section-info">
+                        <p className="doc-count-pill">{cvData.documents?.length || 0} plików w bibliotece</p>
+                    </div>
+                    <button
+                        className="btn-open-documents"
+                        onClick={() => toggleModal('documents', true)}
+                    >
+                        Zarządzaj plikami
+                    </button>
                 </div>
             </aside>
 
@@ -330,10 +374,7 @@ const ProfilePage = () => {
                             </div>
                             <div className="login-form-group">
                                 <label htmlFor="address">Adres</label>
-                                <input type="text" id="address" value={address} onChange={(e) => {
-                                    const formatted = capitalizeFirstLetter(e.target.value);
-                                    setAddress(formatted);
-                                }} />
+                                <input type="text" id="address" value={address} onChange={(e) => setAddress(capitalizeFirstLetter(e.target.value))} />
                             </div>
                             <div className="form-group-row">
                                 <div className="form-group">
@@ -342,10 +383,7 @@ const ProfilePage = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="city">Miasto</label>
-                                    <input type="text" id="city" value={city} onChange={(e) => {
-                                        const formatted = capitalizeFirstLetter(e.target.value);
-                                        setCity(formatted);
-                                    }} />
+                                    <input type="text" id="city" value={city} onChange={(e) => setCity(capitalizeFirstLetter(e.target.value))} />
                                 </div>
                             </div>
                         </fieldset>
@@ -383,7 +421,6 @@ const ProfilePage = () => {
                     {config.content}
                 </SectionModal>
             ))}
-
         </div>
     );
 };

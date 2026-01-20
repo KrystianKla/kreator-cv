@@ -3,7 +3,6 @@ import { useAuth } from './AuthContext';
 import { db } from '../firebaseConfig';
 import { doc, onSnapshot } from "firebase/firestore";
 
-
 const defaultCVData = {
   personal: {
     photo: "", firstName: "", lastName: "", position: "", email: "",
@@ -20,6 +19,7 @@ const defaultCVData = {
   internships: [],
   languages: [],
   socials: [],
+  documents: [], // Dokumenty na głównym poziomie
   hobbies: "",
   sections: {
     'Zainteresowania': false,
@@ -33,9 +33,18 @@ const defaultCVData = {
 
 const CVContext = createContext();
 
+// FUNKCJA MAPUJĄCA - Poprawiona, by pobierać wszystkie sekcje
 const mapProfileToCV = (profileData, authUser) => {
   const baseProfile = profileData || {};
   const personalData = baseProfile.personal || {};
+
+  // Logika szukania dokumentów w różnych miejscach (starych i nowych)
+  const docsFromMain = baseProfile.documents || [];
+  const docsFromPersonal = personalData.documents || [];
+
+  // Łączymy listy i usuwamy duplikaty po ID (na wypadek gdyby były w obu miejscach)
+  const allDocs = [...docsFromMain, ...docsFromPersonal];
+  const uniqueDocs = Array.from(new Map(allDocs.map(item => [item.id, item])).values());
 
   return {
     ...defaultCVData,
@@ -44,15 +53,24 @@ const mapProfileToCV = (profileData, authUser) => {
     experience: baseProfile.experience || [],
     education: baseProfile.education || [],
     skills: baseProfile.skills || [],
+    courses: baseProfile.courses || [],
+    certificates: baseProfile.certificates || [],
+    internships: baseProfile.internships || [],
+    languages: baseProfile.languages || [],
+    socials: baseProfile.socials || [],
+
+    // ZMIANA: Używamy połączonej listy dokumentów
+    documents: uniqueDocs,
+
     personal: {
       ...defaultCVData.personal,
       ...personalData,
-      email: authUser.email,
-      photo: baseProfile.photo || authUser.photoURL,
-      firstName: personalData.firstName || authUser.displayName || '',
+      email: authUser?.email || "",
+      photo: baseProfile.photo || authUser?.photoURL || "",
+      firstName: personalData.firstName || authUser?.displayName || '',
       lastName: personalData.lastName || '',
     },
-    sections: defaultCVData.sections
+    sections: baseProfile.sections || defaultCVData.sections
   };
 };
 
@@ -74,336 +92,173 @@ export const CVProvider = ({ children }) => {
           setCvData(initialCV);
         }
       }, (error) => {
-        console.error("Błąd wczytywania danych profilu w czasie rzeczywistym:", error);
+        console.error("Błąd wczytywania danych profilu:", error);
       });
 
       return () => unsubscribe();
-
     } else {
       setCvData(defaultCVData);
     }
   }, [currentUser]);
 
+  // --- FUNKCJE AKTUALIZUJĄCE ---
+
   const updatePersonal = (field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      personal: { ...prevData.personal, [field]: value },
+    setCvData((prev) => ({
+      ...prev,
+      personal: { ...prev.personal, [field]: value },
     }));
   };
 
   const updateSummary = (value) => {
-    setCvData((prevData) => ({ ...prevData, summary: value }));
+    setCvData((prev) => ({ ...prev, summary: value }));
   };
 
   const addExperience = () => {
     const newId = Date.now();
-    const newEntry = {
-      id: newId, position: "", company: "", location: "",
-      startDate: "", endDate: "", currentlyWorking: false, summary: "",
-    };
-    setCvData((prevData) => ({
-      ...prevData,
-      experience: [...prevData.experience, newEntry],
-    }));
+    const newEntry = { id: newId, position: "", company: "", location: "", startDate: "", endDate: "", currentlyWorking: false, summary: "" };
+    setCvData((prev) => ({ ...prev, experience: [...prev.experience, newEntry] }));
     return newId;
   };
 
   const removeExperience = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      experience: prevData.experience.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, experience: prev.experience.filter((e) => e.id !== id) }));
   };
 
   const updateExperience = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      experience: prevData.experience.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
-    }));
-  };
-
-  const toggleExperienceCurrentlyWorking = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      experience: prevData.experience.map((entry) =>
-        entry.id === id
-          ? {
-            ...entry,
-            currentlyWorking: !entry.currentlyWorking,
-            endDate: !entry.currentlyWorking ? "" : entry.endDate,
-          }
-          : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      experience: prev.experience.map((e) => e.id === id ? { ...e, [field]: value } : e),
     }));
   };
 
   const addEducation = () => {
     const newId = Date.now();
-    const newEntry = {
-      id: newId, degree: "", institution: "", location: "",
-      startDate: "", endDate: "", currentlyStudying: false, summary: "",
-    };
-    setCvData((prevData) => ({
-      ...prevData,
-      education: [...prevData.education, newEntry],
-    }));
+    const newEntry = { id: newId, degree: "", institution: "", location: "", startDate: "", endDate: "", currentlyStudying: false, summary: "" };
+    setCvData((prev) => ({ ...prev, education: [...prev.education, newEntry] }));
     return newId;
   };
 
   const removeEducation = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      education: prevData.education.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, education: prev.education.filter((e) => e.id !== id) }));
   };
 
   const updateEducation = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      education: prevData.education.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
-    }));
-  };
-
-  const toggleEducationCurrentlyStudying = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      education: prevData.education.map((entry) =>
-        entry.id === id
-          ? {
-            ...entry,
-            currentlyStudying: !entry.currentlyStudying,
-            endDate: !entry.currentlyStudying ? "" : entry.endDate,
-          }
-          : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      education: prev.education.map((e) => e.id === id ? { ...e, [field]: value } : e),
     }));
   };
 
   const addSkill = () => {
     const newEntry = { id: Date.now(), name: "", level: 3 };
-    setCvData((prevData) => ({
-      ...prevData,
-      skills: [...prevData.skills, newEntry],
-    }));
+    setCvData((prev) => ({ ...prev, skills: [...prev.skills, newEntry] }));
   };
 
   const removeSkill = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.filter((skill) => skill.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, skills: prev.skills.filter((s) => s.id !== id) }));
   };
 
   const updateSkill = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.map((skill) =>
-        skill.id === id ? { ...skill, [field]: value } : skill
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      skills: prev.skills.map((s) => s.id === id ? { ...s, [field]: value } : s),
     }));
   };
 
   const addCourse = () => {
     const newId = Date.now();
-    const newEntry = {
-      id: newId, courseName: "", provider: "", startDate: "", endDate: "", summary: "",
-    };
-    setCvData((prevData) => ({
-      ...prevData,
-      courses: [...prevData.courses, newEntry],
-    }));
-    return newId;
+    setCvData((prev) => ({ ...prev, courses: [...prev.courses, { id: newId, courseName: "", provider: "", startDate: "", endDate: "", summary: "" }] }));
   };
 
   const removeCourse = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      courses: prevData.courses.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, courses: prev.courses.filter((e) => e.id !== id) }));
   };
 
   const updateCourse = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      courses: prevData.courses.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      courses: prev.courses.map((e) => e.id === id ? { ...e, [field]: value } : e),
     }));
   };
 
   const addCertificate = () => {
-    const newId = Date.now();
-    const newEntry = { id: newId, name: "", year: "", description: "" };
-    setCvData((prevData) => ({
-      ...prevData,
-      certificates: [...prevData.certificates, newEntry],
-    }));
-    return newId;
+    setCvData((prev) => ({ ...prev, certificates: [...prev.certificates, { id: Date.now(), name: "", year: "", description: "" }] }));
   };
 
   const removeCertificate = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      certificates: prevData.certificates.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, certificates: prev.certificates.filter((e) => e.id !== id) }));
   };
 
   const updateCertificate = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      certificates: prevData.certificates.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
-    }));
-  };
-
-  const toggleSection = (sectionName) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      sections: {
-        ...prevData.sections,
-        [sectionName]: !prevData.sections[sectionName],
-      },
-    }));
-  };
-
-  const addInternship = () => {
-    const newId = Date.now();
-    const newEntry = {
-      id: newId, position: "", company: "", location: "",
-      startDate: "", endDate: "", currentlyWorking: false, summary: "",
-    };
-    setCvData((prevData) => ({
-      ...prevData,
-      internships: [...prevData.internships, newEntry],
-    }));
-    return newId;
-  };
-
-  const removeInternship = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      internships: prevData.internships.filter((entry) => entry.id !== id),
-    }));
-  };
-
-  const updateInternship = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      internships: prevData.internships.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
-    }));
-  };
-
-  const toggleInternshipCurrentlyWorking = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      internships: prevData.internships.map((entry) =>
-        entry.id === id
-          ? {
-            ...entry,
-            currentlyWorking: !entry.currentlyWorking,
-            endDate: !entry.currentlyWorking ? "" : entry.endDate,
-          }
-          : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      certificates: prev.certificates.map((e) => e.id === id ? { ...e, [field]: value } : e),
     }));
   };
 
   const addLanguage = () => {
-    const newEntry = { id: Date.now(), name: "", level: "Biegły" };
-    setCvData((prevData) => ({
-      ...prevData,
-      languages: [...prevData.languages, newEntry],
-    }));
+    setCvData((prev) => ({ ...prev, languages: [...prev.languages, { id: Date.now(), name: "", level: "Biegły" }] }));
   };
 
   const removeLanguage = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      languages: prevData.languages.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, languages: prev.languages.filter((e) => e.id !== id) }));
   };
 
   const updateLanguage = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      languages: prevData.languages.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      languages: prev.languages.map((e) => e.id === id ? { ...e, [field]: value } : e),
     }));
   };
 
   const addSocial = () => {
-    const newEntry = { id: Date.now(), label: "", url: "" };
-    setCvData((prevData) => ({
-      ...prevData,
-      socials: [...prevData.socials, newEntry],
-    }));
+    setCvData((prev) => ({ ...prev, socials: [...prev.socials, { id: Date.now(), label: "", url: "" }] }));
   };
 
   const removeSocial = (id) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      socials: prevData.socials.filter((entry) => entry.id !== id),
-    }));
+    setCvData((prev) => ({ ...prev, socials: prev.socials.filter((e) => e.id !== id) }));
   };
 
   const updateSocial = (id, field, value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      socials: prevData.socials.map((entry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
+    setCvData((prev) => ({
+      ...prev,
+      socials: prev.socials.map((e) => e.id === id ? { ...e, [field]: value } : e),
+    }));
+  };
+
+  // DOKUMENTY
+  const addDocument = (docMetadata) => {
+    setCvData((prev) => ({
+      ...prev,
+      documents: [...(prev.documents || []), docMetadata],
+    }));
+  };
+
+  const removeDocument = (id) => {
+    setCvData((prev) => ({
+      ...prev,
+      documents: (prev.documents || []).filter((doc) => doc.id !== id),
     }));
   };
 
   const updateHobbies = (value) => {
-    setCvData((prevData) => ({
-      ...prevData,
-      hobbies: value,
+    setCvData((prev) => ({ ...prev, hobbies: value }));
+  };
+
+  const toggleSection = (sectionName) => {
+    setCvData((prev) => ({
+      ...prev,
+      sections: { ...prev.sections, [sectionName]: !prev.sections[sectionName] },
     }));
   };
 
   const value = {
-    cvData,
-    setCvData,
-    updatePersonal,
-    updateSummary,
-    addExperience,
-    removeExperience,
-    updateExperience,
-    toggleExperienceCurrentlyWorking,
-    addEducation,
-    removeEducation,
-    updateEducation,
-    toggleEducationCurrentlyStudying,
-    addSkill,
-    removeSkill,
-    updateSkill,
-    addCourse,
-    removeCourse,
-    updateCourse,
-    addCertificate,
-    removeCertificate,
-    updateCertificate,
-    toggleSection,
-    addInternship,
-    removeInternship,
-    updateInternship,
-    toggleInternshipCurrentlyWorking,
-    addLanguage,
-    removeLanguage,
-    updateLanguage,
-    addSocial,
-    removeSocial,
-    updateSocial,
-    updateHobbies,
+    cvData, setCvData, updatePersonal, updateSummary, addExperience, removeExperience, updateExperience,
+    addEducation, removeEducation, updateEducation, addSkill, removeSkill, updateSkill,
+    addCourse, removeCourse, updateCourse, addCertificate, removeCertificate, updateCertificate,
+    addLanguage, removeLanguage, updateLanguage, addSocial, removeSocial, updateSocial,
+    updateHobbies, addDocument, removeDocument, toggleSection
   };
 
   return <CVContext.Provider value={value}>{children}</CVContext.Provider>;
@@ -411,8 +266,6 @@ export const CVProvider = ({ children }) => {
 
 export const useCV = () => {
   const context = useContext(CVContext);
-  if (context === undefined) {
-    throw new Error('useCV must be used within a CVProvider');
-  }
+  if (context === undefined) throw new Error('useCV must be used within a CVProvider');
   return context;
 };
