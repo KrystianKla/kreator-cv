@@ -93,8 +93,8 @@ const EducationForm = () => {
                 id={`edu-desc-${entry.id}`}
                 type="textarea"
                 rows="3"
-                value={entry.description}
-                onChange={(e) => updateEducation(entry.id, 'description', e.target.value)}
+                value={entry.summary}
+                onChange={(e) => updateEducation(entry.id, 'summary', e.target.value)}
                 placeholder="Np. wybrane przedmioty, temat pracy dyplomowej, stypendia..."
               />
             </AccordionEntry>

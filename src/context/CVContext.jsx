@@ -19,7 +19,7 @@ const defaultCVData = {
   internships: [],
   languages: [],
   socials: [],
-  documents: [], // Dokumenty na głównym poziomie
+  documents: [],
   hobbies: "",
   sections: {
     'Zainteresowania': false,
@@ -33,16 +33,13 @@ const defaultCVData = {
 
 const CVContext = createContext();
 
-// FUNKCJA MAPUJĄCA - Poprawiona, by pobierać wszystkie sekcje
 const mapProfileToCV = (profileData, authUser) => {
   const baseProfile = profileData || {};
   const personalData = baseProfile.personal || {};
 
-  // Logika szukania dokumentów w różnych miejscach (starych i nowych)
   const docsFromMain = baseProfile.documents || [];
   const docsFromPersonal = personalData.documents || [];
 
-  // Łączymy listy i usuwamy duplikaty po ID (na wypadek gdyby były w obu miejscach)
   const allDocs = [...docsFromMain, ...docsFromPersonal];
   const uniqueDocs = Array.from(new Map(allDocs.map(item => [item.id, item])).values());
 
@@ -59,7 +56,6 @@ const mapProfileToCV = (profileData, authUser) => {
     languages: baseProfile.languages || [],
     socials: baseProfile.socials || [],
 
-    // ZMIANA: Używamy połączonej listy dokumentów
     documents: uniqueDocs,
 
     personal: {
@@ -101,8 +97,6 @@ export const CVProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  // --- FUNKCJE AKTUALIZUJĄCE ---
-
   const updatePersonal = (field, value) => {
     setCvData((prev) => ({
       ...prev,
@@ -134,7 +128,7 @@ export const CVProvider = ({ children }) => {
 
   const addEducation = () => {
     const newId = Date.now();
-    const newEntry = { id: newId, degree: "", institution: "", location: "", startDate: "", endDate: "", currentlyStudying: false, summary: "" };
+    const newEntry = { id: newId, degree: "", school: "", city: "", startDate: "", endDate: "", currentlyStudying: false, summary: "" };
     setCvData((prev) => ({ ...prev, education: [...prev.education, newEntry] }));
     return newId;
   };
@@ -227,7 +221,6 @@ export const CVProvider = ({ children }) => {
     }));
   };
 
-  // DOKUMENTY
   const addDocument = (docMetadata) => {
     setCvData((prev) => ({
       ...prev,
@@ -253,12 +246,61 @@ export const CVProvider = ({ children }) => {
     }));
   };
 
+  const addInternship = () => {
+    const newId = Date.now();
+    const newEntry = {
+      id: newId,
+      position: "",
+      company: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      currentlyWorking: false,
+      summary: ""
+    };
+    setCvData((prev) => ({
+      ...prev,
+      internships: [...(prev.internships || []), newEntry]
+    }));
+    return newId;
+  };
+
+  const removeInternship = (id) => {
+    setCvData((prev) => ({
+      ...prev,
+      internships: prev.internships.filter((e) => e.id !== id),
+    }));
+  };
+
+  const updateInternship = (id, field, value) => {
+    setCvData((prev) => ({
+      ...prev,
+      internships: prev.internships.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
+    }));
+  };
+
+  const toggleInternshipCurrentlyWorking = (id) => {
+    setCvData((prev) => ({
+      ...prev,
+      internships: prev.internships.map((e) =>
+        e.id === id
+          ? {
+            ...e,
+            currentlyWorking: !e.currentlyWorking,
+            endDate: !e.currentlyWorking ? "" : e.endDate,
+          }
+          : e
+      ),
+    }));
+  };
+
   const value = {
     cvData, setCvData, updatePersonal, updateSummary, addExperience, removeExperience, updateExperience,
     addEducation, removeEducation, updateEducation, addSkill, removeSkill, updateSkill,
     addCourse, removeCourse, updateCourse, addCertificate, removeCertificate, updateCertificate,
     addLanguage, removeLanguage, updateLanguage, addSocial, removeSocial, updateSocial,
-    updateHobbies, addDocument, removeDocument, toggleSection
+    updateHobbies, addDocument, removeDocument, toggleSection, addInternship, removeInternship,
+    updateInternship, toggleInternshipCurrentlyWorking,
   };
 
   return <CVContext.Provider value={value}>{children}</CVContext.Provider>;

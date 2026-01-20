@@ -7,8 +7,6 @@ import { updateProfile } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 import { useCV } from '../context/CVContext';
-
-// Komponenty formularzy
 import ExperienceForm from '../components/cv-form/ExperienceForm';
 import EducationForm from '../components/cv-form/EducationForm';
 import SkillsForm from '../components/cv-form/SkillsForm';
@@ -20,8 +18,6 @@ import SocialsForm from '../components/cv-form/SocialsForm';
 import HobbiesForm from '../components/cv-form/HobbiesForm';
 import SectionModal from '../components/ui/SectionModal';
 import DocumentsForm from '../components/cv-form/DocumentsForm';
-
-// Style
 import '../components/cv-form/FormStyles.css';
 import './ProfilePage.css';
 
@@ -73,7 +69,6 @@ const ProfilePage = () => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
 
-                    // 1. Aktualizacja lokalnych stanów formularza podstawowego
                     setNick(data.displayName || currentUser.displayName || '');
                     setFirstName(data.personal?.firstName || '');
                     setLastName(data.personal?.lastName || '');
@@ -85,8 +80,6 @@ const ProfilePage = () => {
                     setSummary(data.summary || '');
                     setPhotoURL(data.photo || currentUser.photoURL);
 
-                    // 2. KLUCZOWA ZMIANA: Przesłanie wszystkich danych do CVContext
-                    // Dzięki temu DocumentsForm i licznik w Sidebarze zobaczą dane z bazy
                     if (typeof setCvData === 'function') {
                         setCvData({
                             summary: data.summary || '',
@@ -100,7 +93,7 @@ const ProfilePage = () => {
                             internships: data.internships || [],
                             socials: data.socials || [],
                             hobbies: data.hobbies || [],
-                            documents: data.documents || [], // To naprawi Twój licznik
+                            documents: data.documents || [],
                         });
                     }
                 } else {
@@ -112,7 +105,7 @@ const ProfilePage = () => {
             }
         };
         fetchUserData();
-    }, [currentUser, setCvData]); // Dodaj setCvData do zależności
+    }, [currentUser, setCvData]);
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
@@ -170,15 +163,12 @@ const ProfilePage = () => {
 
         try {
             let finalPhotoURL = photoURL;
-
-            // Wgrywanie zdjęcia do Storage jeśli zostało zmienione
             if (photoFile) {
                 const storageRef = ref(storage, `avatars/${currentUser.uid}`);
                 await uploadBytes(storageRef, photoFile);
                 finalPhotoURL = await getDownloadURL(storageRef);
             }
 
-            // Aktualizacja profilu Auth
             await updateProfile(auth.currentUser, {
                 displayName: nick,
                 photoURL: finalPhotoURL
@@ -194,13 +184,12 @@ const ProfilePage = () => {
                 address,
                 postalCode,
                 city,
-                photo: finalPhotoURL // Stały link do obiektu personal
+                photo: finalPhotoURL
             };
 
-            // Zapis do Firestore
             await setDoc(userDocRef, {
                 displayName: nick,
-                photo: finalPhotoURL, // Stały link główny
+                photo: finalPhotoURL,
                 summary: summary,
                 personal: newPersonalData,
                 experience: cvData.experience || [],
@@ -215,7 +204,6 @@ const ProfilePage = () => {
                 documents: cvData.documents || []
             }, { merge: true });
 
-            // Aktualizacja Contextu
             if (typeof setCvData === 'function') {
                 setCvData(prev => ({
                     ...prev,

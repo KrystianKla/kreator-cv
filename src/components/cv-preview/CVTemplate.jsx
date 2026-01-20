@@ -23,8 +23,6 @@ const CVTemplate = () => {
   };
 
   /**
-   * PL: Funkcja pomocnicza do formatowania daty w formacie DD.MM.RRRR.
-   * EN: Helper function to format date as DD.MM.YYYY.
    * @param {string} dateString - Data w formacie ISO (YYYY-MM-DD) / Date in ISO format (YYYY-MM-DD)
    * @returns {string | null} Sformatowana data lub null / Formatted date or null
    */
@@ -39,8 +37,6 @@ const CVTemplate = () => {
   };
 
   /**
-   * PL: Funkcja pomocnicza do formatowania daty jako "Miesiąc RRRR" lub "Obecnie".
-   * EN: Helper function to format date as "Month YYYY" or "Present".
    * @param {string} dateString - Data w formacie ISO (YYYY-MM-DD) / Date in ISO format (YYYY-MM-DD)
    * @param {boolean} currentlyWorking - Czy to aktualna pozycja? / Is this the current position?
    * @param {string} dateFormat - Opcjonalny format ('month-year' lub 'year-only') / Optional format ('month-year' or 'year-only') - Currently not used here but kept for potential future use
@@ -233,8 +229,8 @@ const CVTemplate = () => {
                     </p>
                   </div>
                   <p className="cv-job-company">
-                    {edu.institution || "(Uczelnia)"}
-                    {edu.location && `, ${edu.location}`}
+                    {edu.school || "(Uczelnia)"}
+                    {edu.city && `, ${edu.city}`}
                   </p>
                   {edu.summary && (
                     <p className="cv-job-summary">{edu.summary}</p>
@@ -262,6 +258,7 @@ const CVTemplate = () => {
                   </div>
                   <p className="cv-job-company">
                     {course.provider || "(Prowadzący)"}
+                    {course.location && `, ${course.location}`}
                   </p>
                   {course.summary && (
                     <p className="cv-job-summary">{course.summary}</p>
