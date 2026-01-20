@@ -4,7 +4,11 @@ import './CVTemplate.css';
 
 const CVTemplate = () => {
   const { cvData } = useCV();
-  const { personal, summary } = cvData;
+
+  // BEZPIECZNIK: Jeśli cvData jeszcze nie istnieje, nie renderuj nic, aby uniknąć błędów
+  if (!cvData) return null;
+
+  const { personal = {}, summary = "" } = cvData;
 
   const formatDisplayPhone = (phone) => {
     if (!phone) return '';
@@ -22,10 +26,6 @@ const CVTemplate = () => {
     return clean;
   };
 
-  /**
-   * @param {string} dateString - Data w formacie ISO (YYYY-MM-DD) / Date in ISO format (YYYY-MM-DD)
-   * @returns {string | null} Sformatowana data lub null / Formatted date or null
-   */
   const formatDate = (dateString) => {
     if (!dateString) return null;
     try {
@@ -36,13 +36,7 @@ const CVTemplate = () => {
     }
   };
 
-  /**
-   * @param {string} dateString - Data w formacie ISO (YYYY-MM-DD) / Date in ISO format (YYYY-MM-DD)
-   * @param {boolean} currentlyWorking - Czy to aktualna pozycja? / Is this the current position?
-   * @param {string} dateFormat - Opcjonalny format ('month-year' lub 'year-only') / Optional format ('month-year' or 'year-only') - Currently not used here but kept for potential future use
-   * @returns {string} Sformatowana data / Formatted date
-   */
-  const formatMonthYear = (dateString, currentlyWorking = false, dateFormat = 'month-year') => {
+  const formatMonthYear = (dateString, currentlyWorking = false) => {
     if (currentlyWorking) return "Obecnie";
     if (!dateString) return "Data";
 
@@ -61,15 +55,15 @@ const CVTemplate = () => {
   return (
     <div className="cv-preview-page">
       <header className="cv-header">
-        {personal.photo && (
+        {personal?.photo && (
           <img src={personal.photo} alt="Zdjęcie profilowe" className="cv-photo" />
         )}
         <div className="cv-header-info">
           <h1>
-            {personal.firstName || 'Imię'} {personal.lastName || 'Nazwisko'}
+            {personal?.firstName || 'Imię'} {personal?.lastName || 'Nazwisko'}
           </h1>
           <p className="cv-position">
-            {personal.position || 'Twoje Stanowisko'}
+            {personal?.position || 'Twoje Stanowisko'}
           </p>
         </div>
       </header>
@@ -78,26 +72,26 @@ const CVTemplate = () => {
         <aside className="cv-sidebar">
           <h3>Dane Osobowe</h3>
           <ul className="cv-contact-list">
-            {personal.email && <li>📧 {personal.email}</li>}
-            {personal.phone && <li>📞 {personal.countryCode || '+48'} {formatDisplayPhone(personal.phone)}</li>}
-            {(personal.address || personal.city) && (
+            {personal?.email && <li>📧 {personal.email}</li>}
+            {personal?.phone && <li>📞 {personal.countryCode || '+48'} {formatDisplayPhone(personal.phone)}</li>}
+            {(personal?.address || personal?.city) && (
               <li>
                 📍 {personal.address}
                 {personal.address && (personal.postalCode || personal.city) ? <br /> : ''}
                 {formatDisplayPostalCode(personal.postalCode)} {personal.city}
               </li>
             )}
-            {personal.dob && <li><b>Data urodzenia:</b> {formatDate(personal.dob)}</li>}
-            {personal.pob && <li><b>Miejsce urodzenia:</b> {personal.pob}</li>}
-            {personal.sex && <li><b>Płeć:</b> {personal.sex}</li>}
-            {personal.nationality && <li><b>Narodowość:</b> {personal.nationality}</li>}
-            {personal.maritalStatus && <li><b>Stan cywilny:</b> {personal.maritalStatus}</li>}
-            {personal.drivingLicense.length > 0 && (
+            {personal?.dob && <li><b>Data urodzenia:</b> {formatDate(personal.dob)}</li>}
+            {personal?.pob && <li><b>Miejsce urodzenia:</b> {personal.pob}</li>}
+            {personal?.sex && <li><b>Płeć:</b> {personal.sex}</li>}
+            {personal?.nationality && <li><b>Narodowość:</b> {personal.nationality}</li>}
+            {personal?.maritalStatus && <li><b>Stan cywilny:</b> {personal.maritalStatus}</li>}
+            {personal?.drivingLicense?.length > 0 && (
               <li><b>Prawo jazdy:</b> {personal.drivingLicense.join(', ')}</li>
             )}
           </ul>
 
-          {cvData.socials && cvData.socials.length > 0 && (
+          {cvData?.socials?.length > 0 && (
             <div className="cv-sidebar-section" style={{ paddingTop: '1rem' }}>
               <h3>Linki</h3>
               <ul className="cv-links-list">
@@ -113,7 +107,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.skills && cvData.skills.length > 0 && (
+          {cvData?.skills?.length > 0 && (
             <div className="cv-sidebar-section">
               <h3>Umiejętności</h3>
               <ul className="cv-skills-list">
@@ -134,7 +128,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.languages && cvData.languages.length > 0 && (
+          {cvData?.languages?.length > 0 && (
             <div className="cv-sidebar-section">
               <h3>Języki</h3>
               <ul className="cv-language-list">
@@ -148,7 +142,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.hobbies && (
+          {cvData?.hobbies && (
             <div className="cv-sidebar-section">
               <h3>Zainteresowania</h3>
               <p className="cv-hobbies-text">
@@ -166,7 +160,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.internships && cvData.internships.length > 0 && (
+          {cvData?.internships?.length > 0 && (
             <div className="cv-section">
               <h3>Staże</h3>
               {cvData.internships.map((internship) => (
@@ -189,7 +183,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.experience && cvData.experience.length > 0 ? (
+          {cvData?.experience?.length > 0 ? (
             <div className="cv-section">
               <h3>Doświadczenie Zawodowe</h3>
               {cvData.experience.map((exp) => (
@@ -217,7 +211,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.education && cvData.education.length > 0 ? (
+          {cvData?.education?.length > 0 ? (
             <div className="cv-section">
               <h3>Edukacja</h3>
               {cvData.education.map((edu) => (
@@ -245,7 +239,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.courses && cvData.courses.length > 0 && (
+          {cvData?.courses?.length > 0 && (
             <div className="cv-section">
               <h3>Kursy</h3>
               {cvData.courses.map((course) => (
@@ -268,7 +262,7 @@ const CVTemplate = () => {
             </div>
           )}
 
-          {cvData.certificates && cvData.certificates.length > 0 && (
+          {cvData?.certificates?.length > 0 && (
             <div className="cv-section">
               <h3>Certyfikaty</h3>
               {cvData.certificates.map((cert) => (
@@ -286,7 +280,6 @@ const CVTemplate = () => {
               ))}
             </div>
           )}
-
         </section>
       </main>
     </div>

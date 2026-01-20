@@ -26,7 +26,7 @@ const ExtraSectionsForm = () => {
           <ToggleButton
             key={name}
             label={name}
-            isActive={cvData.sections[name]}
+            isActive={cvData?.sections?.[name] || false}
             onClick={() => toggleSection(name)}
           />
         ))}
