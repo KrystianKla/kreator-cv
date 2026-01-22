@@ -1,7 +1,3 @@
-/* ==========================================================================
-   PL: Style dla Paska Nawigacyjnego (Navbar)
-   EN: Styles for the Navigation Bar (Navbar)
-   ========================================================================== */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -14,16 +10,12 @@
   z-index: 1000;
 }
 
-/* PL: Logo/Nazwa aplikacji */
-/* EN: App Logo/Brand Name */
 .navbar-brand {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--primary-green);
 }
 
-/* PL: Kontener na główne linki nawigacyjne */
-/* EN: Container for the main navigation links */
 .navbar-links {
   display: flex;
   gap: 2rem;
@@ -37,8 +29,6 @@
   padding-bottom: 8px;
 }
 
-/* PL: Efekt podkreślenia pojawiający się przy najechaniu lub dla aktywnego linku */
-/* EN: Underline effect appearing on hover or for the active link */
 .navbar-links a::after {
   content: '';
   position: absolute;
@@ -60,8 +50,6 @@
   color: var(--text-dark);
 }
 
-/* PL: Kontener na przyciski akcji (np. Logowanie) */
-/* EN: Container for action buttons (e.g., Login) */
 .navbar-actions .btn {
   padding: 0.6rem 1.2rem;
   border: 2px solid var(--primary-green);
@@ -71,34 +59,22 @@
   transition: all 0.3s ease;
 }
 
-/* PL: Styl przycisku logowania (przezroczysty z ramką) */
-/* EN: Style for the login button (transparent with border - ghost button) */
 .navbar-actions .btn-login {
   background-color: transparent;
   color: var(--primary-green);
 }
 
-/* PL: Efekt wypełnienia przycisku przy najechaniu */
-/* EN: Fill effect for the button on hover */
 .navbar-actions .btn-login:hover {
   background-color: var(--primary-green);
   color: var(--card-bg);
 }
 
-/* ==========================================================================
-   PL: Główny kontener treści (dla stron innych niż edytor)
-   EN: Main content container (for pages other than the editor)
-   ========================================================================== */
 .main-content {
   max-width: 1200px;
   margin: 2.5rem auto;
   padding: 0 2rem;
 }
 
-/* ==========================================================================
-   PL: Style dla sekcji "Hero" (powitalnej)
-   EN: Styles for the "Hero" section (welcome area)
-   ========================================================================== */
 .hero-section {
   text-align: center;
   padding: 5rem 2rem;
@@ -125,8 +101,6 @@
   margin-right: auto;
 }
 
-/* PL: Główny przycisk wezwania do działania (CTA) */
-/* EN: Main Call To Action (CTA) button */
 .hero-section .btn-cta {
   padding: 0.85rem 2.5rem;
   font-size: 1.1rem;
@@ -146,10 +120,6 @@
   transform: translateY(-3px);
 }
 
-/* ==========================================================================
-   PL: Style dla sekcji wyboru szablonu (Template Selector)
-   EN: Styles for the Template Selector section
-   ========================================================================== */
 .template-selector {
   text-align: center;
   padding: 2rem 0;
@@ -162,16 +132,12 @@
   color: var(--text-dark);
 }
 
-/* PL: Siatka dla kart szablonów */
-/* EN: Grid for the template cards */
 .template-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
 }
 
-/* PL: Styl pojedynczej karty szablonu */
-/* EN: Style for a single template card */
 .template-card {
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -182,15 +148,11 @@
   cursor: pointer;
 }
 
-/* PL: Efekt uniesienia karty przy najechaniu */
-/* EN: Card lift effect on hover */
 .template-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* PL: Placeholder wizualny dla podglądu szablonu */
-/* EN: Visual placeholder for the template preview */
 .template-card-placeholder {
   width: 100%;
   height: 380px;
@@ -205,8 +167,6 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-/* PL: Elementy "wireframe" imitujące strukturę CV w placeholderze */
-/* EN: "Wireframe" elements imitating CV structure in the placeholder */
 .placeholder-header {
   width: 60%;
   height: 20px;
@@ -229,8 +189,6 @@
   border-radius: 4px;
 }
 
-/* PL: Nazwa szablonu pod placeholderem */
-/* EN: Template name below the placeholder */
 .template-card-info {
   padding: 1.25rem 1.5rem;
   font-weight: 600;
@@ -238,8 +196,6 @@
   color: var(--text-dark);
 }
 
-/* PL: Style dla nieaktywnej karty szablonu (np. "Wkrótce") */
-/* EN: Styles for an inactive template card (e.g., "Coming Soon") */
 .template-card[style*="not-allowed"] {
   filter: grayscale(80%);
   opacity: 0.6;

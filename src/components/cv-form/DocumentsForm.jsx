@@ -46,7 +46,6 @@ const DocumentsForm = () => {
     if (!window.confirm("Czy na pewno chcesz usunąć ten dokument?")) return;
 
     try {
-      // Jeśli plik ma ścieżkę w storage, usuń go stamtąd
       if (storagePath) {
         const fileRef = ref(storage, storagePath);
         await deleteObject(fileRef);

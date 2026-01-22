@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider /*, linkedInProvider */ } from '../firebaseConfig';
-import {
-    signInWithPopup,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    // OAuthProvider
-} from "firebase/auth";
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, } from "firebase/auth";
 import { useAuth } from '../context/AuthContext';
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from '../firebaseConfig';
@@ -15,10 +10,6 @@ import './LoginPage.css';
 const GoogleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>;
 const LinkedInIcon = () => <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-3.1v8.7h3.1v-4.35c0-.9.6-1.63 1.63-1.63s1.64.73 1.64 1.63v4.35h3.11zM6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68zm1.39 10.14v-8.7H5.5v8.7h2.77z"></path></svg>;
 
-/**
- * PL: Komponent strony logowania/rejestracji (tylko wygląd).
- * EN: Login/Registration page component (visuals only).
- */
 const LoginPage = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
@@ -106,10 +97,6 @@ const LoginPage = () => {
         setTimeout(() => setLoading(false), 1000);
     };
 
-    /**
-     * PL: Zapisuje lub aktualizuje dane użytkownika w kolekcji 'users' w Firestore.
-     * EN: Saves or updates user data in the 'users' collection in Firestore.
-     */
     const updateUserProfile = async (user) => {
         if (!user) return;
 

@@ -1,7 +1,3 @@
-/* ==========================================================================
-   PL: Główny kontener podglądu CV (udający kartkę A4)
-   EN: Main container for the CV preview (simulating an A4 page)
-   ========================================================================== */
 .cv-preview-page {
   background-color: #ffffff;
   width: 100%;
@@ -23,10 +19,6 @@
   word-break: break-all !important;
 }
 
-/* ==========================================================================
-   PL: Nagłówek CV (zdjęcie, imię, stanowisko)
-   EN: CV Header (photo, name, position)
-   ========================================================================== */
 .cv-header {
   display: flex;
   align-items: center;
@@ -48,7 +40,6 @@
   flex: 1;
 }
 
-/* PL: Wyśrodkowanie tekstu, jeśli nie ma zdjęcia / EN: Center text if there is no photo */
 .cv-header-info:only-child {
   text-align: center;
 }
@@ -70,20 +61,12 @@
   font-weight: 500;
 }
 
-/* ==========================================================================
-   PL: Główny układ treści CV (pasek boczny + treść główna)
-   EN: Main CV content layout (sidebar + main content)
-   ========================================================================== */
 .cv-body {
   display: grid;
   grid-template-columns: 38% 1fr;
   gap: 2.5rem;
 }
 
-/* ==========================================================================
-   PL: Pasek boczny (lewa kolumna)
-   EN: Sidebar (left column)
-   ========================================================================== */
 .cv-sidebar h3 {
   font-size: 1.15rem;
   font-weight: 700;
@@ -99,8 +82,6 @@
   margin-top: 1.5rem;
 }
 
-/* PL: Lista danych kontaktowych */
-/* EN: Contact details list */
 .cv-contact-list {
   list-style: none;
   padding: 0;
@@ -119,8 +100,6 @@
   font-weight: 600;
 }
 
-/* PL: Lista linków (Media społecznościowe) */
-/* EN: Links list (Social Media) */
 .cv-links-list {
   list-style: none;
   padding: 0;
@@ -145,8 +124,6 @@
   color: var(--primary-green);
 }
 
-/* PL: Lista umiejętności */
-/* EN: Skills list */
 .cv-skills-list {
   list-style: none;
   padding: 0;
@@ -170,8 +147,6 @@
   padding-right: 1rem;
 }
 
-/* PL: Kropki poziomu umiejętności */
-/* EN: Skill level dots */
 .skill-level-dots {
   display: flex;
   gap: 0.25rem;
@@ -188,8 +163,6 @@
   background-color: var(--primary-green);
 }
 
-/* PL: Lista języków */
-/* EN: Languages list */
 .cv-language-list {
   list-style: none;
   padding: 0;
@@ -218,18 +191,12 @@
   padding-left: 1rem;
 }
 
-/* PL: Tekst zainteresowań */
-/* EN: Hobbies text */
 .cv-hobbies-text {
   font-size: 10.5pt;
   color: #555;
   line-height: 1.5;
 }
 
-/* ==========================================================================
-   PL: Główna treść (prawa kolumna)
-   EN: Main content (right column)
-   ========================================================================== */
 .cv-main-content h3 {
   font-size: 1.15rem;
   font-weight: 700;
@@ -241,14 +208,10 @@
   margin-bottom: 1.25rem;
 }
 
-/* PL: Ogólny styl dla sekcji (Profil, Doświadczenie, Edukacja, etc.) */
-/* EN: General style for sections (Summary, Experience, Education, etc.) */
 .cv-section {
   margin-bottom: 1.5rem;
 }
 
-/* PL: Tekst profilu zawodowego */
-/* EN: Profile summary text */
 .cv-summary-text {
   font-size: 11pt;
   line-height: 1.6;
@@ -256,16 +219,12 @@
   text-align: justify;
 }
 
-/* PL: Placeholder dla pustych sekcji */
-/* EN: Placeholder for empty sections */
 .placeholder-text {
   font-style: italic;
   color: #999;
   font-size: 10pt;
 }
 
-/* PL: Pojedynczy wpis w sekcjach Doświadczenie, Staże, Edukacja, Kursy, Certyfikaty */
-/* EN: Single entry in Experience, Internships, Education, Courses, Certificates sections */
 .cv-job-entry {
   margin-bottom: 1.25rem;
   page-break-inside: avoid;

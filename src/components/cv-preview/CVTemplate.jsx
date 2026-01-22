@@ -4,8 +4,6 @@ import './CVTemplate.css';
 
 const CVTemplate = () => {
   const { cvData } = useCV();
-
-  // BEZPIECZNIK: Jeśli cvData jeszcze nie istnieje, nie renderuj nic, aby uniknąć błędów
   if (!cvData) return null;
 
   const { personal = {}, summary = "" } = cvData;
