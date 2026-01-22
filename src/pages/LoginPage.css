@@ -1,0 +1,132 @@
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2.5rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.login-container h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.login-error {
+    color: #c0392b;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    min-height: 1.2em;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.login-form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.login-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.login-form-group input {
+    padding: 0.85rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-form-group input:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-login-email {
+    background-color: var(--primary-green);
+    color: white;
+}
+
+.btn-login-email:hover {
+    background-color: var(--primary-green-dark);
+}
+
+.btn-register {
+    background-color: transparent;
+    color: var(--primary-green);
+    border: 1px solid var(--primary-green);
+}
+
+.btn-register:hover {
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.btn-google {
+    color: #444;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+}
+
+.btn-google:hover {
+    background-color: #f8f8f8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-linkedin {
+    background-color: #0077B5;
+    color: white;
+    border: none;
+}
+
+.btn-linkedin:hover {
+    background-color: #005e92;
+}
+
+.login-button svg {
+    height: 20px;
+    width: 20px;
+}
+
+.login-separator {
+    margin: 2rem 0;
+    color: #aaa;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-separator::before,
+.login-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
+}

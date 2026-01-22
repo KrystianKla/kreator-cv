@@ -1,0 +1,45 @@
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .cv-preview-wrapper,
+    .cv-preview-wrapper * {
+        visibility: visible;
+    }
+
+    .cv-preview-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .cv-preview-page {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        aspect-ratio: unset !important;
+        margin: 0 !important;
+        padding: 15mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: visible;
+    }
+
+
+    .cv-section,
+    .cv-job-entry {
+        page-break-inside: avoid;
+    }
+
+    h3 {
+        page-break-after: avoid;
+    }
+}
